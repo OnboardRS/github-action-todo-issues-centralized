@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: TODO Issues Centralized
-	      uses: OnboardRS/github-action-todo-issues-centralized@develop
+        uses: OnboardRS/github-action-todo-issues-centralized@develop
 		    with:
           code-repo-owner: ${{ github.repository_owner }}
           code-repo-name: ${{ github.repository }}

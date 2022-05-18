@@ -8,8 +8,10 @@ using IHost host = Host.CreateDefaultBuilder(args)
 					   .Build();
 
 static TService Get<TService>(IHost host)
-	where TService : notnull =>
-	host.Services.GetRequiredService<TService>();
+	where TService : notnull
+{
+	return host.Services.GetRequiredService<TService>();
+}
 
 static async Task StartToDoIssueProcessAsync(ActionInputs inputs, IHost host)
 {
@@ -96,10 +98,11 @@ static async Task StartToDoIssueProcessAsync(ActionInputs inputs, IHost host)
 	Environment.Exit(0);
 }
 
-var parser = Default.ParseArguments<ActionInputs>(() => new(), args);
+var parser = Default.ParseArguments<ActionInputs>(() => new ActionInputs(), args);
 parser.WithNotParsed(
 	errors =>
 	{
+		// ReSharper disable once AccessToDisposedClosure
 		Get<ILoggerFactory>(host)
 			.CreateLogger("OnboardRS.ToDoIssues.GitHubAction.Program")
 			.LogError(
