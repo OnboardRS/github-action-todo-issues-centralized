@@ -1,0 +1,1 @@
+﻿docker build --build-arg GITHUB_TOKEN=$env:GITHUB_TOKEN --build-arg GITHUB_ACTOR=$env:GITHUB_ACTOR -t onboardrs-todo-actions-centralized .

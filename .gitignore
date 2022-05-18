@@ -29,6 +29,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+[Ll]ogs/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -125,9 +126,6 @@ $tf/
 _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
-
-# JustCode is a .NET coding add-in
-.JustCode
 
 # TeamCity is a build add-in
 _TeamCity*
@@ -347,3 +345,67 @@ healthchecksdb
 
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
+
+# Ionide (cross platform F# VS Code tools) working folder
+.ionide/
+
+.idea/
+
+.DS_Store
+.vscode/
+
+
+## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
+[Ww][Ii][Nn]32/
+# Uncomment if you have tasks that create the projects static files in wwwroot
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+*.tlog
+# Coverlet is a free, cross platform Code Coverage Tool
+coverage*.json
+coverage*.xml
+coverage*.info
+# NuGet v3s project.json files produces more ignorable files
+# Visual Studio 6 auto-generated project file (contains which files were open etc.)
+*.vbp
+# Visual Studio 6 workspace and project file (working project files containing files to include in project)
+*.dsw
+*.dsp
+# Visual Studio 6 technical files
+# FAKE - F Sharp Make
+# Teleriks JustMock configuration file
+# Visual Studio History (VSHistory) files
+.vshistory/
+# Ionide (cross platform F Sharp VS Code tools) working folder
+# Fody - auto-generated XML schema
+FodyWeavers.xsd
+# VS Code files for those working on multiple tools
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+# Local History for Visual Studio Code
+.history/
+# Windows Installer files from build outputs
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+# Backup files
+*.bak
+*.old
+#JetBrains
+*.sln.iml
+#VS Code
+#Local Build Outputs
+global.json
+inspectionResult.xml
+report.xml
+git_changes.txt
+nuget.config
+NuGet.Config
+
+localQualityCheckResult.xml
