@@ -1,43 +1,26 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 as build
-ARG GITHUB_ACTOR
-ARG GITHUB_TOKEN
+# Set the base image as the .NET 6.0 SDK (this includes the runtime)
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as build-env
 
-WORKDIR /build
+# Copy everything and publish the release (publish implicitly restores and builds)
+WORKDIR /app
+COPY . ./
+RUN dotnet publish ./OnboardRS.ToDoIssues.GitHubAction/OnboardRS.ToDoIssues.GitHubAction.csproj -c Release -o out --no-self-contained
 
-COPY ./nuget-template.config ./nuget.config
+# Label the container
+LABEL maintainer="OnboardRS"
+LABEL repository="https://github.com/OnboardRS/github-action-todo-issues-centralized"
+LABEL homepage="https://github.com/OnboardRS/github-action-todo-issues-centralized"
 
-COPY ./Onboard.MarketingMaterials.Api/Onboard.MarketingMaterials.Api.csproj ./Onboard.MarketingMaterials.Api/Onboard.MarketingMaterials.Api.csproj
-COPY ./Onboard.MarketingMaterials.Business/Onboard.MarketingMaterials.Business.csproj ./Onboard.MarketingMaterials.Business/Onboard.MarketingMaterials.Business.csproj
-COPY ./Onboard.MarketingMaterials.Common/Onboard.MarketingMaterials.Common.csproj ./Onboard.MarketingMaterials.Common/Onboard.MarketingMaterials.Common.csproj
-COPY marketing-materials.sln .
+# Label as GitHub action
+LABEL com.github.actions.name="TODO Actions Centralized"
+# Limit to 160 characters
+LABEL com.github.actions.description="Creates github issues when the exact phrase // TODO: is found. Stores the issues in a centralized repo for easier project planning within an organization."
+# See branding:
+# https://docs.github.com/actions/creating-actions/metadata-syntax-for-github-actions#branding
+LABEL com.github.actions.icon="activity"
+LABEL com.github.actions.color="orange"
 
-RUN sed -i -e "s/ACTOR/$GITHUB_ACTOR/g" -e "s/TOKEN/$GITHUB_TOKEN/g" nuget.config
-
-RUN dotnet restore marketing-materials.sln
-
-COPY . .
-
-RUN dotnet publish marketing-materials.sln -c Release -o /publish
-
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 as runtime 
-WORKDIR /api 
-
-COPY --from=build /publish .
-
-CMD ["dotnet", "Onboard.MarketingMaterials.Api.dll"]
-
-#NOTE: Build Image Command 
-# docker build -t onboard-contentful-api-local —build-arg GITHUB_ACTOR=[GITUB_USER] —build-arg GITHUB_TOKEN=[GITHUB_TOKEN] .
-
-#For Windows:
-# docker container prune -f
-# docker run `
-# -e AWS_PROFILE=sandbox `
-# -e AWS_REGION=us-west-2 `
-# -e CONTENTFUL_SECRET_MANAGER_KEY=sandbox/contentfulsecrets `
-# -e CONTENTFUL_ENVIRONMENT=dev `
-# -e CONTENTFUL_MANAGEMENT_BASE_URL=https://api.contentful.com `
-# -p 8080:80 `
-# --name onboard-contentful-api-local `
-# -v $env:USERPROFILE\.aws:/root/.aws:ro `
-# onboard-contentful-api-local
+# Relayer the .NET SDK, anew with the build output
+FROM mcr.microsoft.com/dotnet/sdk:6.0
+COPY --from=build-env /app/out .
+ENTRYPOINT [ "dotnet", "/OnboardRS.ToDoIssues.GitHubAction.dll" ]

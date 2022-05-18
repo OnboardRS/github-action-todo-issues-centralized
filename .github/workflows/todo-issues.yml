@@ -1,0 +1,27 @@
+name: Run This as GitHub Action
+on:
+  push:
+
+jobs:
+  todo-issues:
+    name: Handle TODO ZenHub Issues Integration
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_SERVICEACCOUNT }}
+      solutionName: ./todo-issues-centralized.sln
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: TODO Issues Centralized
+	      uses: OnboardRS/github-action-todo-issues-centralized@develop
+		    with:
+          code-repo-owner: ${{ github.repository_owner }}
+          code-repo-name: ${{ github.repository }}
+          code-repo-branch: ${{ github.ref }}
+          code-repo-node-id: ${{ github.repository.node_id }}
+          issue-repo-owner: 'oh-hai-owner'
+          issue-repo-name: 'oh-hai-name'
+          issue-repo-branch: 'oh-hai-branch'
+          issue-repo-node-id: 'oh-hai-node-id'
+          issue-label: 'github-actions'
