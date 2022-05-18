@@ -98,7 +98,7 @@ static async Task StartToDoIssueProcessAsync(ActionInputs inputs, IHost host)
 	Environment.Exit(0);
 }
 
-var parser = Default.ParseArguments<ActionInputs>(() => new ActionInputs(), args);
+var parser = Default.ParseArguments(() => new ActionInputs(), args);
 parser.WithNotParsed(
 	errors =>
 	{
