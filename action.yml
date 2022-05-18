@@ -1,64 +1,64 @@
 ﻿name: 'TODO Actions Centralized'
 description: 'Creates github issues when the exact phrase // TODO: is found. Stores the issues in a centralized repo for easier project planning within an organization.'
 branding:
-	icon: activity
-	color: orange
+  icon: activity
+  color: orange
 inputs:
-	code-repo-owner: 
-		description:
-			'The code repo owner, for example: \"OnboardRS\". Assign from `github.repository_owner`.'
-		required: true
-	code-repo-name:
-		description:
-			'The code repo repository name, for example: \"github-action-todo-issues-centralized\". Assign from `github.repository`.'
-		required: true
-	code-repo-branch:
-		description:
-			'The code repo branch name, for example: \"refs/heads/develop\". Assign from `github.repository.node_id`.'
-		required: true
-	code-repo-node-id: 
-		description:
-			'The code repo node id, for example: \"R_kgDOHlz\". Assign from `github.repository.node_id`.'
-		required: true
-	issue-repo-owner: 
-		description:
-			'The issue repo owner, for example: \"OnboardRS\". Assign from centralized issue repo.'
-		required: true
-	issue-repo-name:
-		description:
-			'The issue repo repository name, for example: \"zenhub-dev\". Assign from centralized issue repo.'
-		required: true
-	issue-repo-branch:
-		description:
-			'The issue repo branch name, for example: \"refs/heads/master\". Assign from centralized issue repo.'
-		required: true
-	issue-repo-node-id: 
-		description:
-			'The issue repo node id, for example: \"R_kgDOHlz\". Assign from centralized issue repo.'
-		required: true
-	issue-label: 
-		description:
-			'The issue label TODO GitHub issues should be created with, for example: \"github-actions\". Assign per usage.'
-		required: true
+  code-repo-owner: 
+    description:
+      'The code repo owner, for example: \"OnboardRS\". Assign from `github.repository_owner`.'
+    required: true
+  code-repo-name:
+    description:
+      'The code repo repository name, for example: \"github-action-todo-issues-centralized\". Assign from `github.repository`.'
+    required: true
+  code-repo-branch:
+    description:
+      'The code repo branch name, for example: \"refs/heads/develop\". Assign from `github.repository.node_id`.'
+    required: true
+  code-repo-node-id: 
+    description:
+      'The code repo node id, for example: \"R_kgDOHlz\". Assign from `github.repository.node_id`.'
+    required: true
+  issue-repo-owner: 
+    description:
+      'The issue repo owner, for example: \"OnboardRS\". Assign from centralized issue repo.'
+    required: true
+  issue-repo-name:
+    description:
+      'The issue repo repository name, for example: \"zenhub-dev\". Assign from centralized issue repo.'
+    required: true
+  issue-repo-branch:
+    description:
+      'The issue repo branch name, for example: \"refs/heads/master\". Assign from centralized issue repo.'
+    required: true
+  issue-repo-node-id: 
+    description:
+      'The issue repo node id, for example: \"R_kgDOHlz\". Assign from centralized issue repo.'
+    required: true
+  issue-label: 
+    description:
+      'The issue label TODO GitHub issues should be created with, for example: \"github-actions\". Assign per usage.'
+    required: true
 runs:
-	using: 'docker'
-	image: 'Dockerfile'
-	args:
-	- '-code-repo-owner'
-	- ${{ inputs.code-repo-owner }}
-	- '-code-repo-name'
-	- ${{ inputs.code-repo-name }}
-	- '-code-repo-branch'
-	- ${{ inputs.code-repo-branch }}
-	- '-code-repo-node-id'
-	- ${{ inputs.code-repo-node-id }}	
-	- '-issue-repo-owner'
-	- ${{ inputs.issue-repo-owner }}
-	- '-issue-repo-name'
-	- ${{ inputs.issue-repo-name }}
-	- '-issue-repo-branch'
-	- ${{ inputs.issue-repo-branch }}
-	- '-issue-repo-node-id'
-	- ${{ inputs.issue-repo-node-id }}
-	- '-issue-label'
-	- ${{ inputs.issue-label }}
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+  - '-code-repo-owner'
+  - ${{ inputs.code-repo-owner }}
+  - '-code-repo-name'
+  - ${{ inputs.code-repo-name }}
+  - '-code-repo-branch'
+  - ${{ inputs.code-repo-branch }}
+  - '-code-repo-node-id'
+  - ${{ inputs.code-repo-node-id }}  
+  - '-issue-repo-owner'
+  - ${{ inputs.issue-repo-owner }}
+  - '-issue-repo-name'
+  - ${{ inputs.issue-repo-name }}
+  - '-issue-repo-branch'
+  - ${{ inputs.issue-repo-branch }}
+  - '-issue-repo-node-id'
+  - ${{ inputs.issue-repo-node-id }}
+  - '-issue-label'
+  - ${{ inputs.issue-label }}
