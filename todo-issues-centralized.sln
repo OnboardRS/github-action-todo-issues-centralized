@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A97E73AD-3AEB-405B-A5A4-CC766FEE14D6}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\coding-standards.yml = .github\workflows\coding-standards.yml
+		.github\workflows\build.yml = .github\workflows\build.yml
 		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject

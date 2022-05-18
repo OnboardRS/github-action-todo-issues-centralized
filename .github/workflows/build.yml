@@ -13,23 +13,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.PAT_GITHUB_SERVICEACCOUNT }}
-      - name: Configure Coding Standards
-        uses: OnboardRS/github-action-code-quality@1.0.5
-        timeout-minutes: 5
-        with:
-          solutionPath: ${{ env.solutionName }}
-          gitHubCheckInToken: ${{ secrets.PAT_GITHUB_SERVICEACCOUNT }}
-          codingStandardsRepo: OnboardRS/coding-standards
-          gitHubActor: ${{ github.actor }}
-          gitHubArtifactToken: ${{ secrets.ARTIFACT_SERVICE_TOKEN }}
-          applyCSharpStandards: 'true'
-          applyPulumiStandards: 'false' 
-      - name: Nuget Config      
-        run: |
-          mv nuget-template.config nuget.config
-          sed -i -e "s/ACTOR/${{ github.actor }}/g" -e "s/TOKEN/${{ secrets.ARTIFACT_SERVICE_TOKEN }}/g" nuget.config      
       - name: Restore Dependencies
         run: |
           dotnet restore
