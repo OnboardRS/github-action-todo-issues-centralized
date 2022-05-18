@@ -15,7 +15,7 @@ jobs:
 
       - name: TODO Issues Centralized
         uses: OnboardRS/github-action-todo-issues-centralized@develop
-		    with:
+        with:
           code-repo-owner: ${{ github.repository_owner }}
           code-repo-name: ${{ github.repository }}
           code-repo-branch: ${{ github.ref }}
