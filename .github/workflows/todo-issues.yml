@@ -1,4 +1,4 @@
-name: Run This as GitHub Action
+name: TODO Centralized
 on:
   push:
 
@@ -7,7 +7,6 @@ jobs:
     name: Handle TODO ZenHub Issues Integration
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_SERVICEACCOUNT }}
       solutionName: ./todo-issues-centralized.sln
     steps:
       - name: Checkout Repository

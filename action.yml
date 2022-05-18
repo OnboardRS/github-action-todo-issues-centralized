@@ -44,21 +44,21 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-  - '-code-repo-owner'
+  - '--code-repo-owner'
   - ${{ inputs.code-repo-owner }}
-  - '-code-repo-name'
+  - '--code-repo-name'
   - ${{ inputs.code-repo-name }}
-  - '-code-repo-branch'
+  - '--code-repo-branch'
   - ${{ inputs.code-repo-branch }}
-  - '-code-repo-node-id'
+  - '--code-repo-node-id'
   - ${{ inputs.code-repo-node-id }}  
-  - '-issue-repo-owner'
+  - '--issue-repo-owner'
   - ${{ inputs.issue-repo-owner }}
-  - '-issue-repo-name'
+  - '--issue-repo-name'
   - ${{ inputs.issue-repo-name }}
-  - '-issue-repo-branch'
+  - '--issue-repo-branch'
   - ${{ inputs.issue-repo-branch }}
-  - '-issue-repo-node-id'
+  - '--issue-repo-node-id'
   - ${{ inputs.issue-repo-node-id }}
-  - '-issue-label'
+  - '--issue-label'
   - ${{ inputs.issue-label }}
