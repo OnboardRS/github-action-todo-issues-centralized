@@ -1,8 +1,9 @@
 ﻿using CommandLine;
+using OnboardRS.ToDoIssues.Business.Models;
 
 namespace OnboardRS.ToDoIssues.GitHubAction;
 
-public class ActionInputs
+public class ActionInputs : BaseReflectedToStringObject
 {
 	string _codeRepoRepositoryName = null!;
 	string _codeRepoBranchName = null!;
@@ -102,5 +103,10 @@ public class ActionInputs
 		{
 			assign(value.Split("/")[^1]);
 		}
+	}
+
+	public void LogInputs(ILogger<ActionInputs> actionInputsLogger)
+	{
+		actionInputsLogger.LogInformation(ToString());
 	}
 }
