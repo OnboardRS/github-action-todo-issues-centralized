@@ -107,6 +107,6 @@ public class ActionInputs : BaseReflectedToStringObject
 
 	public void LogInputs(ILogger<ActionInputs> actionInputsLogger)
 	{
-		actionInputsLogger.LogInformation(ToString());
+		actionInputsLogger.LogInformation($"{nameof(ActionInputs)}.{nameof(LogInputs)}\n{ToString()}");
 	}
 }

@@ -114,5 +114,5 @@ parser.WithNotParsed(
 var actionInputs = parser.Value;
 var actionInputsLogger = Get<ILogger<ActionInputs>>(host);
 actionInputs.LogInputs(actionInputsLogger);
-await parser.WithParsedAsync(options => StartToDoIssueProcessAsync(options, host));
+await StartToDoIssueProcessAsync(actionInputs, host);
 await host.RunAsync();
