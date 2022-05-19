@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using OnboardRS.ToDoIssues.Business.Models;
+using OnboardRS.ToDoIssues.Business.Models.Config;
 
 namespace OnboardRS.ToDoIssues.GitHubAction;
 
@@ -14,6 +15,8 @@ public class ActionInputs : BaseReflectedToStringObject
 	string _issueRepoOwner = null!;
 	string _issueRepoNodeId = null!;
 	string _issueLabel = null!;
+	string _gitHubActionToken = null!;
+	string _mongoDbUrl = null!;
 
 
 	[Option("code-repo-owner",
@@ -95,6 +98,33 @@ public class ActionInputs : BaseReflectedToStringObject
 	{
 		get => _issueLabel;
 		set => ParseAndAssign(value, str => _issueLabel = str);
+	}
+
+	[Option("github-action-token",
+			   Required = true,
+			   HelpText = "The GitHub token with permission to read and change the code.. Assign per usage.")]
+	public string GitHubActionToken
+	{
+		get => _gitHubActionToken;
+		set => ParseAndAssign(value, str => _gitHubActionToken = str);
+	}
+
+	[Option("mongo-db-url",
+			   Required = true,
+			   HelpText = "The Mongo DB Url to use to store TODO hashes. Assign per usage.")]
+	public string MongoDbUrl
+	{
+		get => _mongoDbUrl;
+		set => ParseAndAssign(value, str => _mongoDbUrl = str);
+	}
+
+	public ToDoIssuesConfig ToToDoIssuesConfig()
+	{
+		RepoInfoModel codeRepo = new RepoInfoModel(CodeRepoName, CodeRepoOwner, CodeRepoBranch, CodeRepoNodeId);
+		RepoInfoModel issueRepo = new RepoInfoModel(IssueRepoName, IssueRepoOwner, IssueRepoBranch, IssueRepoNodeId);
+
+		var config = new ToDoIssuesConfig(GitHubActionToken, MongoDbUrl, IssueLabel, codeRepo, issueRepo);
+		return config;
 	}
 
 	static void ParseAndAssign(string? value, Action<string> assign)

@@ -40,6 +40,14 @@ inputs:
     description:
       'The issue label TODO GitHub issues should be created with, for example: \"github-actions\". Assign per usage.'
     required: true
+  github-action-token: 
+    description:
+      'The issue label TODO GitHub issues should be created with, for example: \"github-actions\". Assign per usage.'
+    required: true
+  mongo-db-url: 
+    description:
+      'The issue label TODO GitHub issues should be created with, for example: \"github-actions\". Assign per usage.'
+    required: true
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -62,3 +70,7 @@ runs:
   - ${{ inputs.issue-repo-node-id }}
   - '--issue-label'
   - ${{ inputs.issue-label }}
+	 - '--github-action-token'
+  - ${{ inputs.github-action-token }}
+	- '--mongo-db-url'
+  - ${{ inputs.mongo-db-url }}

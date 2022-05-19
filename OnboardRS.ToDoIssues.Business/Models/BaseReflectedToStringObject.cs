@@ -12,17 +12,17 @@ public abstract class BaseReflectedToStringObject
 		foreach (var property in GetType().GetProperties())
 		{
 			sb.Append(property.Name);
-			sb.Append(": ");
+			sb.Append(": [");
 			if (property.GetIndexParameters().Length > 0)
 			{
-				sb.Append($"[{property.GetIndexParameters().Length}]");
+				sb.Append($"({property.GetIndexParameters().Length})");
 			}
 			else
 			{
 				sb.Append(property.GetValue(this, null));
 			}
 
-			sb.Append(" | ");
+			sb.Append("] | ");
 		}
 
 		return sb.ToString();

@@ -1,34 +1,33 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace OnboardRS.ToDoIssues.Business.Models;
+namespace OnboardRS.ToDoIssues.Business.Models.Config;
 
-public abstract class ToDoIssuesConfig : BaseReflectedToStringObject
+public class ToDoIssuesConfig : BaseReflectedToStringObject
 {
-	public const string ASPNETCORE_ENVIRONMENT_KEY = "ASPNETCORE_ENVIRONMENT";
+	public string GitHubAccessToken { get; set; }
+	public string MongoDbUrl { get; set; }
+	public string IssueLabel { get; set; }
+	public RepoInfoModel CodeRepoInfoModel { get; set; }
+	public RepoInfoModel IssueRepoInfoModel { get; set; }
 
-	private string? _aspNetCoreEnvironment;
+	public ToDoIssuesConfig(string gitHubAccessToken, string mongoDbUrl, string issueLabel, RepoInfoModel codeRepoInfoModel, RepoInfoModel issueRepoInfoModel)
+	{
+		GitHubAccessToken = gitHubAccessToken;
+		MongoDbUrl = mongoDbUrl;
+		IssueLabel = issueLabel;
+		CodeRepoInfoModel = codeRepoInfoModel;
+		IssueRepoInfoModel = issueRepoInfoModel;
+	}
+}
 
-	protected ToDoIssuesConfig(ILogger logger)
+public abstract class BaseConfig : BaseReflectedToStringObject
+{
+	protected BaseConfig(ILogger logger)
 	{
 		Logger = logger;
-		Logger.LogInformation($"Application config created with ${ASPNETCORE_ENVIRONMENT_KEY} of [{AspNetCoreEnvironment}]");
 	}
 
 	protected ILogger Logger { get; set; }
-
-	public string? AspNetCoreEnvironment
-	{
-		get
-		{
-			if (string.IsNullOrWhiteSpace(_aspNetCoreEnvironment))
-			{
-				_aspNetCoreEnvironment = GetEnvironmentVariable(ASPNETCORE_ENVIRONMENT_KEY);
-			}
-
-			return _aspNetCoreEnvironment;
-		}
-		set => _aspNetCoreEnvironment = value;
-	}
 
 	public string GetExpectedEnvironmentVariable(string variableName)
 	{

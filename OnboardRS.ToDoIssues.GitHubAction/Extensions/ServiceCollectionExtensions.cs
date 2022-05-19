@@ -1,4 +1,5 @@
-﻿using OnboardRS.ToDoIssues.Business.Utilities;
+﻿using OnboardRS.ToDoIssues.Business.Models.Config;
+using OnboardRS.ToDoIssues.Business.Utilities;
 
 namespace OnboardRS.ToDoIssues.GitHubAction.Extensions;
 
@@ -14,5 +15,4 @@ public static class ServiceCollectionExtensions
 			});
 		return services;
 	}
-
 }

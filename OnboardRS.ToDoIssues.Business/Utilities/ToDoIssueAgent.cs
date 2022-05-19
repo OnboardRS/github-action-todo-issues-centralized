@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OnboardRS.ToDoIssues.Business.Models;
+using OnboardRS.ToDoIssues.Business.Models.Config;
 
 namespace OnboardRS.ToDoIssues.Business.Utilities;
 
@@ -20,12 +21,9 @@ public class ToDoIssueAgent
 	}
 
 
-	public Task ProcessRepoToDoActionsAsync(RepoInfoModel codeRepo, RepoInfoModel issueRepo)
+	public Task ProcessRepoToDoActionsAsync(ToDoIssuesConfig config)
 	{
-		_logger.LogInformation("Code Repo:");
-		_logger.LogInformation(codeRepo.ToString());
-		_logger.LogInformation("Issue Repo:");
-		_logger.LogInformation(issueRepo.ToString());
+		_logger.LogInformation(config.ToString());
 		return Task.CompletedTask;
 	}
 }
