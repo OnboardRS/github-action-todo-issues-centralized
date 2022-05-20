@@ -20,4 +20,12 @@ public class RepoInfoModel : BaseReflectedToStringObject
 		Branch = branch;
 		NodeId = nodeId ?? string.Empty;
 	}
+
+	public void ValidateInputs()
+	{
+		AssertNotNullOrNotEmpty(nameof(Name),Name);
+		AssertNotNullOrNotEmpty(nameof(Owner), Owner);
+		AssertNotNullOrNotEmpty(nameof(Branch), Branch);
+		AssertNotNullOrNotEmpty(nameof(NodeId), NodeId);
+	}
 }

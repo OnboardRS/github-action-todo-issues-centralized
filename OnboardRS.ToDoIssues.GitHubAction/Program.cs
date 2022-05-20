@@ -23,10 +23,20 @@ static async Task StartToDoIssueProcessAsync(ActionInputs inputs, IHost host)
 	logger.LogInformation(inputs.IssueLabel);
 
 	var toDoIssueAgent = Get<ToDoIssueAgent>(host);
-	RepoInfoModel codeRepo = new RepoInfoModel(inputs.CodeRepoName, inputs.CodeRepoOwner, inputs.CodeRepoBranch, inputs.CodeRepoNodeId);
-	RepoInfoModel issueRepo = new RepoInfoModel(inputs.IssueRepoName, inputs.IssueRepoOwner, inputs.IssueRepoBranch, inputs.IssueRepoNodeId);
-	await toDoIssueAgent.ProcessRepoToDoActionsAsync(codeRepo, issueRepo);
+	var config = inputs.ToToDoIssuesConfig();
+	try
+	{
+		config.ValidateInputs();
+		toDoIssueAgent.SetToDoIssuesConfig(config);
+	}
+	catch (ApplicationException e)
+	{
+		logger.LogError(e, e.Message);
+		logger.LogError("Inputs invalid, shutting down.");
+		Environment.Exit(1);
+	}
 
+	await toDoIssueAgent.ProcessRepoToDoActionsAsync();
 
 	//using ProjectWorkspace workspace = Get<ProjectWorkspace>(host);
 	//using CancellationTokenSource tokenSource = new();

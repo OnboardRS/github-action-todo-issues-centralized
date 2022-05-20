@@ -27,4 +27,12 @@ public abstract class BaseReflectedToStringObject
 
 		return sb.ToString();
 	}
+
+	public void AssertNotNullOrNotEmpty(string propertyName, string value)
+	{
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			throw new ApplicationException($"Property {propertyName} must have a value.");
+		}
+	}
 }

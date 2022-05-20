@@ -18,6 +18,15 @@ public class ToDoIssuesConfig : BaseReflectedToStringObject
 		CodeRepoInfoModel = codeRepoInfoModel;
 		IssueRepoInfoModel = issueRepoInfoModel;
 	}
+
+	public void ValidateInputs()
+	{
+		AssertNotNullOrNotEmpty(nameof(GitHubAccessToken), GitHubAccessToken);
+		AssertNotNullOrNotEmpty(nameof(MongoDbUrl), MongoDbUrl);
+		AssertNotNullOrNotEmpty(nameof(IssueLabel), IssueLabel);
+		CodeRepoInfoModel.ValidateInputs();
+		IssueRepoInfoModel.ValidateInputs();
+	}
 }
 
 public abstract class BaseConfig : BaseReflectedToStringObject
