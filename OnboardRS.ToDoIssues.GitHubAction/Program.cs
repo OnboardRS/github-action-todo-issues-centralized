@@ -1,4 +1,5 @@
-﻿using OnboardRS.ToDoIssues.Business.Models;
+﻿using OnboardRS.ToDoIssues.Business.Interfaces;
+using OnboardRS.ToDoIssues.Business.Models;
 using OnboardRS.ToDoIssues.Business.Utilities;
 using OnboardRS.ToDoIssues.GitHubAction.Extensions;
 
@@ -116,7 +117,7 @@ parser.WithNotParsed(
 		Get<ILoggerFactory>(host)
 			.CreateLogger("OnboardRS.ToDoIssues.GitHubAction.Program")
 			.LogError(
-				string.Join(Environment.NewLine, errors.Select(error => error.ToString())));
+				string.Join(IToDoFileContents.UNIX_LINE_ENDING, errors.Select(error => error.ToString())));
 
 		Environment.Exit(2);
 	});

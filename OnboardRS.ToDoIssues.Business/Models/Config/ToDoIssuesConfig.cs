@@ -10,6 +10,11 @@ public class ToDoIssuesConfig : BaseReflectedToStringObject
 	public RepoInfoModel CodeRepoInfoModel { get; set; }
 	public RepoInfoModel IssueRepoInfoModel { get; set; }
 
+	public List<string> ExcludeList { get; set; } = new()
+													{
+														"README.md"
+													};
+
 	public ToDoIssuesConfig(string gitHubAccessToken, string mongoDbUrl, string issueLabel, RepoInfoModel codeRepoInfoModel, RepoInfoModel issueRepoInfoModel)
 	{
 		GitHubAccessToken = gitHubAccessToken;

@@ -120,7 +120,7 @@ public class GitHubAgent
 	//			*/
 	//		}
 
-	//		File.AppendAllText(processedRepoFile, $"{ghOrg}/{r.name}{Environment.NewLine}");
+	//		File.AppendAllText(processedRepoFile, $"{ghOrg}/{r.name}{IToDoFileContents.UNIX_LINE_ENDING}");
 
 	//		// Trying to avoid rate limit
 	//		Thread.Sleep(1000 * 2);

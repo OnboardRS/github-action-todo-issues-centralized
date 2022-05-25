@@ -1,11 +1,4 @@
-﻿
-
-using System.Linq;
-using OnboardRS.ToDoIssues.Tests.Models;
-
-namespace OnboardRS.ToDoIssues.Tests;
-
-
+﻿namespace OnboardRS.ToDoIssues.Tests;
 
 [TestClass]
 public class ToDoParsingTests
@@ -70,17 +63,13 @@ public class ToDoParsingTests
 	}
 
 
-	private string InheritedParserTestCase02String = @$"
-
-		// {MARKER} [#1]: Item 1
+	private string InheritedParserTestCase02String = @$"		// {MARKER} [#1]: Item 1
 
 		// {MARKER} [$wow]: Item 2
 
 	// {MARKER} [todo-actions#1]: Item 3
 
-	// {MARKER} [https://github.com/dtinth/todo-actions/issues/1]: Item 4
-
-";
+	// {MARKER} [https://github.com/dtinth/todo-actions/issues/1]: Item 4";
 
 	[TestMethod]
 	public async Task InheritedParserTestCase02DetectsReference()

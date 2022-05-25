@@ -1,5 +1,7 @@
 ﻿using System.Security;
 using System.Text.RegularExpressions;
+using OnboardRS.ToDoIssues.Business.Interfaces;
+using OnboardRS.ToDoIssues.Business.Models.Tasks;
 
 namespace OnboardRS.ToDoIssues.Business.Utilities.Extensions;
 
@@ -40,9 +42,9 @@ public static class ModelActionExtension
 				await changedFile.SaveToDoFileAsync();
 			}
 
-			var gitAddCommand = $"git add {string.Join(' ', changedFiles)}";
+			var gitAddCommand = $"git add {string.Join(" ", changedFiles)}";
 			await gitAddCommand.RunBashCommandAsync(logger);
-			var gitCommitCommand = $"git commit -m '{commitMessage}'";
+			var gitCommitCommand = $"git commit -m \"{ commitMessage}\"";
 			await gitCommitCommand.RunBashCommandAsync(logger);
 			var gitPushCommand = $"git push \"https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git\" HEAD:\"$GITHUB_REF\"";
 			await gitPushCommand.RunBashCommandAsync(logger);
@@ -51,6 +53,16 @@ public static class ModelActionExtension
 		{
 			logger.LogInformation("No TODO file changes found.");
 		}
+	}
+
+	public static async Task<string> MarkAsCompletedAsync(this ToDoTask toDoTask)
+	{
+		return null;
+	}
+
+	public static async Task UpdateStateAsync(this ToDoTask toDoTask, IToDoTaskState newState)
+	{
+
 	}
 }
 
