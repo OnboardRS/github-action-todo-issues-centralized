@@ -20,16 +20,18 @@ namespace OnboardRS.ToDoIssues.Business.Models.Tasks;
 //	            updateState(newState: ITaskState): Promise<void>
 //            }
 
-public class ToDoTaskResolutionModel
+public class ToDoComparisonModel
 {
 	public ToDoIssueModel? ToDoIssueModel { get; set; }
 	public ToDoEntity ToDoEntity { get; set; }
-	public string? IssueHash { get; set; }
-	public string? ExistingIssueReference { get; set; }
+	public string? DbIssueHash { get; set; }
+	public string? DbIssueReference { get; set; }
 
-	public ToDoTaskResolutionModel(ToDoEntity toDoEntity)
+	public ToDoComparisonModel(ToDoEntity toDoEntity)
 	{
 		ToDoEntity = toDoEntity;
+		DbIssueHash = toDoEntity.Hash;
+		DbIssueReference = toDoEntity.IssueReference;
 	}
 }
 

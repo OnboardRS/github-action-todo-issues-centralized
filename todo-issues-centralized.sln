@@ -8,7 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		.github\workflows\build.yml = .github\workflows\build.yml
 		dockerBuild.ps1 = dockerBuild.ps1
 		Dockerfile = Dockerfile
 		dockerRun.ps1 = dockerRun.ps1
@@ -18,11 +17,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\todo-issues.yml = .github\workflows\todo-issues.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnboardRS.ToDoIssues.Business", "OnboardRS.ToDoIssues.Business\OnboardRS.ToDoIssues.Business.csproj", "{79E36595-14B6-416A-9E28-D03E7B7BC1B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnboardRS.ToDoIssues.Business", "OnboardRS.ToDoIssues.Business\OnboardRS.ToDoIssues.Business.csproj", "{79E36595-14B6-416A-9E28-D03E7B7BC1B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnboardRS.ToDoIssues.GitHubAction", "OnboardRS.ToDoIssues.GitHubAction\OnboardRS.ToDoIssues.GitHubAction.csproj", "{0596E8F6-9354-4B37-A913-F005990AF600}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnboardRS.ToDoIssues.GitHubAction", "OnboardRS.ToDoIssues.GitHubAction\OnboardRS.ToDoIssues.GitHubAction.csproj", "{0596E8F6-9354-4B37-A913-F005990AF600}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnboardRS.ToDoIssues.Tests", "OnboardRS.ToDoIssues.Tests\OnboardRS.ToDoIssues.Tests.csproj", "{0EA4D860-76B1-4AA2-9B1B-FC6B82E98D68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnboardRS.ToDoIssues.Tests", "OnboardRS.ToDoIssues.Tests\OnboardRS.ToDoIssues.Tests.csproj", "{0EA4D860-76B1-4AA2-9B1B-FC6B82E98D68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

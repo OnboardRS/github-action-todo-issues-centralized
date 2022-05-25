@@ -4,7 +4,7 @@ public class ToDoModel : BaseReflectedToStringObject, IToDo
 {
 	public IToDoFile ToDoFile { get; set; }
 	public string Prefix { get; set; }
-	public int Line { get; set; }
+	public int StartLine { get; set; }
 	public string Suffix { get; set; }
 	public string Body { get; set; }
 	public string? Title { get; set; }
@@ -16,14 +16,14 @@ public class ToDoModel : BaseReflectedToStringObject, IToDo
 		set
 		{
 			_reference = value;
-			ToDoFile.Contents.ChangeLine(Line, $"{Prefix}TODO{(null == value ? $"[{value}]" : string.Empty)}:${Suffix}");
+			ToDoFile.Contents.ChangeLine(StartLine, $"{Prefix}{ToDoConstants.TASK_MARKER}{(null != value ? $"[{value}]" : string.Empty)}:${Suffix}");
 		}
 	}
 
-	public ToDoModel(IToDoFile file, int line, string prefix, string? reference, string suffix)
+	public ToDoModel(IToDoFile file, int startLine, string prefix, string? reference, string suffix)
 	{
 		ToDoFile = file;
-		Line = line;
+		StartLine = startLine;
 		Prefix = prefix;
 		Reference = reference;
 		Suffix = suffix;
@@ -33,7 +33,7 @@ public class ToDoModel : BaseReflectedToStringObject, IToDo
 
 	public int GetStartLine()
 	{
-		var result = Line + 1;
+		var result = StartLine + 1;
 		return result;
 	}
 

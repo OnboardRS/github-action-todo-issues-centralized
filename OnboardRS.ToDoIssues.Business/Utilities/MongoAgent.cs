@@ -62,27 +62,40 @@ public class MongoAgent
 		_logger = logger;
 	}
 
-	public async Task<ToDoTaskResolutionModel> BeginTaskResolution(string todoUniqueKey, string repositoryId, IToDo todo)
+	public async Task<List<ToDoComparisonModel>> GetExistingToDoComparisonModelsAsync()
 	{
-		var entity = todo.ToTodDoEntity(todoUniqueKey, repositoryId);
-
-		// Ensure a task exists in the database.
-		var upsertedEntity = await UpsertByIdAsync(entity);
-		if (null == upsertedEntity)
+		var comparisonModels = new List<ToDoComparisonModel>();
+		var items = await FindAllUncompletedToDosAsync();
+		foreach (var toDoEntity in items)
 		{
-			throw new ApplicationException("Failed to upsert a task.");
+			var comparisonModel = new ToDoComparisonModel(toDoEntity);
+			comparisonModels.Add(comparisonModel);
 		}
 
-		if (upsertedEntity.IssueReference != null)
-		{
-			_logger.LogDebug($"Found already-existing identifier {upsertedEntity.IssueReference} for TODO {todoUniqueKey}.");
-		}
-
-		var result = new ToDoTaskResolutionModel(upsertedEntity);
-		return result;
+		return comparisonModels;
 	}
 
-	public async Task<ToDoEntity> AcquireTaskCreationLock(ToDoEntity model, string currentProcessId)
+	//public async Task<ToDoComparisonModel> BeginTaskResolution(string todoUniqueKey, IToDo todo)
+	//{
+	//	var entity = todo.ToTodDoEntity(todoUniqueKey, repositoryId);
+
+	//	// Ensure a task exists in the database.
+	//	var upsertedEntity = await UpsertByIdAsync(entity);
+	//	if (null == upsertedEntity)
+	//	{
+	//		throw new ApplicationException("Failed to upsert a task.");
+	//	}
+
+	//	if (upsertedEntity.IssueReference != null)
+	//	{
+	//		_logger.LogDebug($"Found already-existing identifier {upsertedEntity.IssueReference} for TODO {todoUniqueKey}.");
+	//	}
+
+	//	var result = new ToDoTaskResolutionModel(upsertedEntity);
+	//	return result;
+	//}
+
+	public async Task AcquireTaskCreationLock(ToDoEntity model, string currentProcessId)
 	{
 		// Acquire a lock...
 		_logger.LogDebug($"Acquiring lock for TODO {model.Id} (currentProcessId={currentProcessId}).");
@@ -96,14 +109,12 @@ public class MongoAgent
 			throw new ApplicationException("Failed to acquire a lock for this task.");
 
 		}
-
-		return lockedTask;
 	}
 
 	public async Task Finish(ToDoEntity model, string taskReference, IToDoTaskState state)
 	{
 		//// Associate
-		//_logger.LogDebug($"Created task {taskReference} for TODO {model.Id}. Saving changes.");
+		//_logger.LogDebug($"Created task {taskReference} for {ToDoConstants.TASK_MARKER} {model.Id}. Saving changes.");
 		//model.TaskReference = 
 
 		//	  await db.tasks.findOneAndUpdate(
@@ -123,9 +134,9 @@ public class MongoAgent
 
 	}
 
-	public async Task<List<ToDoEntity>> FindAllUncompletedTasksAsync(string repositoryId)
+	public async Task<List<ToDoEntity>> FindAllUncompletedToDosAsync()
 	{
-		var filter = Builders<ToDoEntity>.Filter.Eq(x => x.RepositoryId, repositoryId);
+		var filter = Builders<ToDoEntity>.Filter.Eq(x => x.RepositoryId, _config.CodeRepoInfoModel.Name);
 		filter &= Builders<ToDoEntity>.Filter.Not(Builders<ToDoEntity>.Filter.Eq(x => x.Completed, false));
 		filter &= Builders<ToDoEntity>.Filter.Not(Builders<ToDoEntity>.Filter.Eq(x => x.IssueReference, null));
 		var findCursor = await ToDoMongoCollection.FindAsync(filter);

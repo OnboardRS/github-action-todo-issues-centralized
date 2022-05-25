@@ -245,8 +245,10 @@ public class GitHubAgent
 
 	public async Task<Issue> CreateGitHubIssueAsync(ToDoIssueModel toDoIssueModel)
 	{
-		var newIssue = new NewIssue(toDoIssueModel.Title);
-		newIssue.Body = toDoIssueModel.Body;
+		var newIssue = new NewIssue(toDoIssueModel.Title)
+		               {
+			               Body = toDoIssueModel.Body
+		               };
 		return await CreateGitHubIssueAsync(newIssue);
 	}
 

@@ -1,0 +1,29 @@
+name: Coding Standards
+
+on:
+  push:
+
+jobs:
+  coding-standards:
+    name: Apply Coding Standards
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_SERVICEACCOUNT }}
+      solutionName: ./todo-issues-centralized.sln
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Restore Dependencies
+        run: |
+          dotnet restore
+      - name: Tests
+        run: |
+          dotnet test --no-restore --filter FullyQualifiedName!~IntegrationTests
+      - name: ReSharper CLI InspectCode
+        uses: OnboardRS/github-action-resharper-inspect-code@1.0.0
+        timeout-minutes: 5
+        with:
+          solutionPath: ${{ env.solutionName }}
+          minimumFailSeverity: warning
+          failOnIssue: 1
+          minimumReportSeverity: warning    

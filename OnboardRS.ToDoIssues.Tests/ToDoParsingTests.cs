@@ -1,31 +1,33 @@
-﻿namespace OnboardRS.ToDoIssues.Tests;
+﻿using OnboardRS.ToDoIssues.Business;
+
+namespace OnboardRS.ToDoIssues.Tests;
 
 [TestClass]
 public class ToDoParsingTests
 {
-	public const string MARKER = "TODO";
+
 	public string InheritedParserTestCase01String = @$"
 
-        // {MARKER}: Item 1
+        // {ToDoConstants.TASK_MARKER}: Item 1
 
-        // {MARKER}: Item 2
+        // {ToDoConstants.TASK_MARKER}: Item 2
         // Body
 
-        // {MARKER}: Item 3
+        // {ToDoConstants.TASK_MARKER}: Item 3
         //
         // Extended body
 
-        // Not part of TODO
+        // Not part of {ToDoConstants.TASK_MARKER}
 
         /*
-         * {MARKER}: Item 4
+         * {ToDoConstants.TASK_MARKER}: Item 4
          * Body
          *
          * Extended body
          */
 
         <!--
-          - {MARKER}: Item 5
+          - {ToDoConstants.TASK_MARKER}: Item 5
           - Body
           -
           - Extended body
@@ -33,7 +35,7 @@ public class ToDoParsingTests
           Not part of TODO
           -->
         
-          # {MARKER}: Item 6
+          # {ToDoConstants.TASK_MARKER}: Item 6
           # Body
           #
           # Extended body
@@ -63,13 +65,13 @@ public class ToDoParsingTests
 	}
 
 
-	private string InheritedParserTestCase02String = @$"		// {MARKER} [#1]: Item 1
+	private string InheritedParserTestCase02String = @$"		// {ToDoConstants.TASK_MARKER} [#1]: Item 1
 
-		// {MARKER} [$wow]: Item 2
+		// {ToDoConstants.TASK_MARKER} [$wow]: Item 2
 
-	// {MARKER} [todo-actions#1]: Item 3
+	// {ToDoConstants.TASK_MARKER} [todo-actions#1]: Item 3
 
-	// {MARKER} [https://github.com/dtinth/todo-actions/issues/1]: Item 4";
+	// {ToDoConstants.TASK_MARKER} [https://github.com/dtinth/todo-actions/issues/1]: Item 4";
 
 	[TestMethod]
 	public async Task InheritedParserTestCase02DetectsReference()
@@ -84,7 +86,7 @@ public class ToDoParsingTests
 	}
 
 
-	private string InheritedParserTestCase03String = @$"        // {MARKER}:
+	private string InheritedParserTestCase03String = @$"        // {ToDoConstants.TASK_MARKER}:
         // Title
         // Body";
 
@@ -99,13 +101,13 @@ public class ToDoParsingTests
 	}
 
 	[TestMethod]
-	[DataRow($"// {MARKER} [#14]: Dogs", true, "//", "#14", "Dogs")]
-	[DataRow($"// {MARKER}: Item 1", true, "//", "", "Item 1")]
-	[DataRow($"// {MARKER}: Item 2", true, "//", "", "Item 2")]
-	[DataRow($"// {MARKER}: Item 3", true, "//", "", "Item 3")]
-	[DataRow($" * {MARKER}: Item 4", true, "*", "", "Item 4")]
-	[DataRow($" - {MARKER}: Item 5", true, "-", "", "Item 5")]
-	[DataRow($"# {MARKER}: Item 6", true, "#", "", "Item 6")]
+	[DataRow($"// {ToDoConstants.TASK_MARKER} [#14]: Dogs", true, "//", "#14", "Dogs")]
+	[DataRow($"// {ToDoConstants.TASK_MARKER}: Item 1", true, "//", "", "Item 1")]
+	[DataRow($"// {ToDoConstants.TASK_MARKER}: Item 2", true, "//", "", "Item 2")]
+	[DataRow($"// {ToDoConstants.TASK_MARKER}: Item 3", true, "//", "", "Item 3")]
+	[DataRow($" * {ToDoConstants.TASK_MARKER}: Item 4", true, "*", "", "Item 4")]
+	[DataRow($" - {ToDoConstants.TASK_MARKER}: Item 5", true, "-", "", "Item 5")]
+	[DataRow($"# {ToDoConstants.TASK_MARKER}: Item 6", true, "#", "", "Item 6")]
 
 	public void ParseLineForToDoTest(string testString, bool isMatch, string expectedPrefix, string expectedReference, string expectedSuffix)
 	{

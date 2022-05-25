@@ -19,9 +19,6 @@ public class ToDoFileContents : IToDoFileContents
 	public void ChangeLine(int lineIndex, string newLineContents)
 	{
 		Lines[lineIndex] = newLineContents;
-
-
-
 		Changed = true;
 	}
 

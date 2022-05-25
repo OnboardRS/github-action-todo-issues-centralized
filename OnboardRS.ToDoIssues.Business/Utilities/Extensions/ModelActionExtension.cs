@@ -40,7 +40,7 @@ public static class ModelActionExtension
 		var changedFiles = toDoFiles.Where(x => x.Contents.Changed).ToList();
 		if (changedFiles.Any())
 		{
-			logger.LogInformation($"TODO files changed: {changedFiles.Count}");
+			logger.LogInformation($"{ToDoConstants.TASK_MARKER} files changed: {changedFiles.Count}");
 
 			foreach (var changedFile in changedFiles)
 			{
@@ -111,8 +111,8 @@ public static class ModelActionExtension
 		var file = todo.ToDoFile.FileName;
 
 		// TODO: Also link to end line in addition to just the starting line.
-		// This requires changing `IFile` interface and `File` class to also keep track of where the TODO comment ends.
-		var line = todo.GetStartLine();
+		// This requires changing `IFile` interface and `File` class to also keep track of where the {ToDoConstants.TASK_MARKER} comment ends.
+		var line = todo.StartLine;
 		var owner = config.CodeRepoInfoModel.Owner;
 		var repo = config.CodeRepoInfoModel.Name;
 		var defaultBranch = config.CodeRepoInfoModel.Branch;
@@ -123,7 +123,7 @@ public static class ModelActionExtension
 		builder.AppendLine(todo.Body);
 		builder.AppendLine();
 		builder.AppendLine("---");
-		builder.AppendLine($"This issue has been automatically created by [github-action-todo-issues-centralized] (https://github.com/OnboardRS/github-action-todo-issues-centralizeds) based on a TODO comment found in ${link}. ");
+		builder.AppendLine($"This issue has been automatically created by [github-action-todo-issues-centralized] (https://github.com/OnboardRS/github-action-todo-issues-centralizeds) based on a {ToDoConstants.TASK_MARKER} comment found in ${link}. ");
 		builder.AppendLine("_");
 		var fullBody = builder.ToString();
 		var hash = fullBody.HashString();

@@ -1,4 +1,5 @@
-﻿using OnboardRS.ToDoIssues.Business.Interfaces;
+﻿using OnboardRS.ToDoIssues.Business;
+using OnboardRS.ToDoIssues.Business.Interfaces;
 using OnboardRS.ToDoIssues.Business.Models;
 using OnboardRS.ToDoIssues.Business.Utilities;
 using OnboardRS.ToDoIssues.GitHubAction.Extensions;
@@ -20,7 +21,7 @@ static async Task StartToDoIssueProcessAsync(ActionInputs inputs, IHost host)
 	logger.LogInformation("Program: Test information log via logger.");
 	Console.WriteLine("Program: Test console write line.");
 
-	logger.LogInformation("TODO Label:");
+	logger.LogInformation($"{ToDoConstants.TASK_MARKER} Label:");
 	logger.LogInformation(inputs.IssueLabel);
 
 	var toDoIssueAgent = Get<ToDoIssueAgent>(host);
