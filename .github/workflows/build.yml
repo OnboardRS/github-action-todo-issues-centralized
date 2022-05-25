@@ -17,7 +17,7 @@ jobs:
         run: |
           dotnet restore
       - name: Configure Coding Standards
-        uses: OnboardRS/github-action-code-quality@1.0.4
+        uses: OnboardRS/github-action-code-quality@master
         timeout-minutes: 5
         with:
           solutionPath: ${{ env.solutionName }}
