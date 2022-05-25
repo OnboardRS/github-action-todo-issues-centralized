@@ -25,6 +25,7 @@ jobs:
           codingStandardsRepo: OnboardRS/coding-standards
           gitHubActor: ${{ github.actor }}
           gitHubArtifactToken: ${{ secrets.ARTIFACT_SERVICE_TOKEN }}
+          applyCSharpStandards: 'true'
       - name: Tests
         run: |
           dotnet test --no-restore --filter FullyQualifiedName!~IntegrationTests
