@@ -1,5 +1,7 @@
 ﻿
 
+using OnboardRS.ToDoIssues.Business.Models.Mongo;
+
 namespace OnboardRS.ToDoIssues.Business.Models.Tasks;
 
 //public class ToDoTaskResolutionProcedure =
@@ -18,17 +20,32 @@ namespace OnboardRS.ToDoIssues.Business.Models.Tasks;
 //	            updateState(newState: ITaskState): Promise<void>
 //            }
 
-
-public class ToDoTask
+public class ToDoTaskResolutionModel
 {
-	public ToDoTask(string taskReference, IToDoTaskState taskState)
+	public ToDoIssueModel? ToDoIssueModel { get; set; }
+	public ToDoEntity ToDoEntity { get; set; }
+	public string? IssueHash { get; set; }
+	public string? ExistingIssueReference { get; set; }
+
+	public ToDoTaskResolutionModel(ToDoEntity toDoEntity)
 	{
-		TaskReference = taskReference;
-		TaskState = taskState;
+		ToDoEntity = toDoEntity;
+	}
+}
+
+
+public class ToDoIssueModel
+{
+	public ToDoIssueModel(string hash, string title, string body)
+	{
+		IssueHash = hash;
+		Title = title;
+		Body = body;
 	}
 
-	public string TaskReference { get; set; }
-	public IToDoTaskState TaskState { get; set; }
+	public string Title { get; set; }
+	public string Body { get; set; }
+	public string IssueHash { get; set; }
 
 
 }

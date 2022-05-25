@@ -5,7 +5,7 @@ using OnboardRS.ToDoIssues.GitHubAction.Extensions;
 
 
 using IHost host = Host.CreateDefaultBuilder(args)
-					   .ConfigureServices((_, services) => services.AddGitHubActionServices())
+					   .ConfigureServices((_, services) => services.AddGitHubActionServices(args))
 					   .Build();
 
 static TService Get<TService>(IHost host)
@@ -24,19 +24,6 @@ static async Task StartToDoIssueProcessAsync(ActionInputs inputs, IHost host)
 	logger.LogInformation(inputs.IssueLabel);
 
 	var toDoIssueAgent = Get<ToDoIssueAgent>(host);
-	var config = inputs.ToToDoIssuesConfig();
-	try
-	{
-		config.ValidateInputs();
-		toDoIssueAgent.SetToDoIssuesConfig(config);
-	}
-	catch (ApplicationException e)
-	{
-		logger.LogError(e, e.Message);
-		logger.LogError("Inputs invalid, shutting down.");
-		Environment.Exit(1);
-	}
-
 	await toDoIssueAgent.ProcessRepoToDoActionsAsync();
 
 	//using ProjectWorkspace workspace = Get<ProjectWorkspace>(host);
@@ -109,16 +96,12 @@ static async Task StartToDoIssueProcessAsync(ActionInputs inputs, IHost host)
 	Environment.Exit(0);
 }
 
+var logger = new ConsoleLogger(LogLevel.Debug);
 var parser = Default.ParseArguments(() => new ActionInputs(), args);
 parser.WithNotParsed(
 	errors =>
 	{
-		// ReSharper disable once AccessToDisposedClosure
-		Get<ILoggerFactory>(host)
-			.CreateLogger("OnboardRS.ToDoIssues.GitHubAction.Program")
-			.LogError(
-				string.Join(IToDoFileContents.UNIX_LINE_ENDING, errors.Select(error => error.ToString())));
-
+		logger.LogError(string.Join(IToDoFileContents.UNIX_LINE_ENDING, errors.Select(error => error.ToString()))); ;
 		Environment.Exit(2);
 	});
 

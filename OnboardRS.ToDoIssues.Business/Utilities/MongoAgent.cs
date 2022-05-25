@@ -2,6 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 using OnboardRS.ToDoIssues.Business.Models.Mongo;
+using OnboardRS.ToDoIssues.Business.Models.Tasks;
 
 namespace OnboardRS.ToDoIssues.Business.Utilities;
 
@@ -16,7 +17,7 @@ public class MongoAgent
 	private readonly ToDoIssuesConfig _config;
 	private IMongoClient? _mongoClient;
 	private IMongoDatabase? _taskDatabse;
-	private IMongoCollection<MongoTodDoModel>? _taskCollection;
+	private IMongoCollection<ToDoEntity>? _taskCollection;
 
 	private IMongoClient MongoClient
 	{
@@ -42,13 +43,13 @@ public class MongoAgent
 		}
 	}
 
-	private IMongoCollection<MongoTodDoModel> ToDoMongoCollection
+	private IMongoCollection<ToDoEntity> ToDoMongoCollection
 	{
 		get
 		{
 			if (null == _taskCollection)
 			{
-				_taskCollection = MongoDatabase.GetCollection<MongoTodDoModel>(TODO_COLLECTION_NAME);
+				_taskCollection = MongoDatabase.GetCollection<ToDoEntity>(TODO_COLLECTION_NAME);
 			}
 			return _taskCollection;
 		}
@@ -61,141 +62,114 @@ public class MongoAgent
 		_logger = logger;
 	}
 
-	//public async Task<TaskResolutionProcedure> beginTaskResolution(string todoUniqueKey, string repositoryId, IToDo todo)
-	//	{
-	//	const db = await getMongoDb()
-	//  const _id = ObjectId.createFromHexString(todoUniqueKey)
-
-	//  // Ensure a task exists in the database.
-	//	const task = await db.tasks.findOneAndUpdate(
-
-	//	{ _id: _id },
-	//    {
-	//      $setOnInsert:
-	//		{
-	//_id: _id,
-	//        repositoryId: repositoryId,
-	//        taskReference: null,
-	//        createdAt: new Date(),
-	//        ownerProcessId: null,
-	//        ownerProcessTimestamp: null,
-	//      },
-	//    },
-	//    { upsert: true, returnOriginal: false },
-	//  )
-	//  if (!task.value)
-	//{
-	//	throw new Error("Failed to upsert a task.")
-	//  }
-	//if (task.value.taskReference)
-	//{
-	//	__loggerger._loggerDebug(
-	//	  "Found already-existing identifier {} for TODO {}.",
-	//	  task.value.taskReference,
-	//	  todoUniqueKey,
-
-
-	//	)
-
-
-	//	return { existingTaskReference: task.value.taskReference }
-	//}
-
-	//return {
-	//	async acquireTaskCreationLock()
-	//	{
-	//		// Acquire a lock...
-	//		__loggerger._loggerDebug(
-	//		  "Acquiring lock for TODO {} (currentProcessId={}).",
-	//		  todoUniqueKey,
-	//		  currentProcessId,
-
-
-	//		)
-
-
-	//	  const lockedTask = await db.tasks.findOneAndUpdate(
-
-
-	//		{
-	//_id: _id,
-	//          $or:
-	//			[
-
-	//			{ ownerProcessTimestamp: null },
-	//            { ownerProcessTimestamp: { $lt: new Date(Date.now() - 60e3) } },
-	//          ],
-	//        },
-	//        {
-	//          $set:
-	//			{
-	//ownerProcessId: currentProcessId,
-	//            ownerProcessTimestamp: new Date(),
-	//          },
-	//        },
-	//        { returnOriginal: false },
-	//      )
-	//      if (!lockedTask.value)
-	//	{
-	//		throw new Error("Failed to acquire a lock for this task.")
-
-	//	  }
-	//	return {
-	//		async finish(taskReference, state)
-	//		{
-	//			// Associate
-	//			__loggerger._loggerDebug(
-	//			  "Created task {} for TODO {}. Saving changes.",
-	//			  taskReference,
-	//			  todoUniqueKey,
-
-
-	//			)
-
-
-	//		  await db.tasks.findOneAndUpdate(
-
-
-	//			{ _id: _id },
-	//            { $set: { taskReference: taskReference, hash: state.hash } },
-	//          )
-	//        },
-	//      }
-	//},
-	//  }
-	//}
-
-	public async Task<List<MongoTodDoModel>> FindAllTasksAsync()
+	public async Task<ToDoTaskResolutionModel> BeginTaskResolution(string todoUniqueKey, string repositoryId, IToDo todo)
 	{
-		var findCursor = await ToDoMongoCollection.FindAsync(Builders<MongoTodDoModel>.Filter.Empty);
+		var entity = todo.ToTodDoEntity(todoUniqueKey, repositoryId);
+
+		// Ensure a task exists in the database.
+		var upsertedEntity = await UpsertByIdAsync(entity);
+		if (null == upsertedEntity)
+		{
+			throw new ApplicationException("Failed to upsert a task.");
+		}
+
+		if (upsertedEntity.IssueReference != null)
+		{
+			_logger.LogDebug($"Found already-existing identifier {upsertedEntity.IssueReference} for TODO {todoUniqueKey}.");
+		}
+
+		var result = new ToDoTaskResolutionModel(upsertedEntity);
+		return result;
+	}
+
+	public async Task<ToDoEntity> AcquireTaskCreationLock(ToDoEntity model, string currentProcessId)
+	{
+		// Acquire a lock...
+		_logger.LogDebug($"Acquiring lock for TODO {model.Id} (currentProcessId={currentProcessId}).");
+
+		model.OwnerProcessId = currentProcessId;
+		model.OwnerProcessTimestamp = DateTime.UtcNow;
+		var lockedTask = await UpsertByLockOrIdAsync(model);
+
+		if (null == lockedTask)
+		{
+			throw new ApplicationException("Failed to acquire a lock for this task.");
+
+		}
+
+		return lockedTask;
+	}
+
+	public async Task Finish(ToDoEntity model, string taskReference, IToDoTaskState state)
+	{
+		//// Associate
+		//_logger.LogDebug($"Created task {taskReference} for TODO {model.Id}. Saving changes.");
+		//model.TaskReference = 
+
+		//	  await db.tasks.findOneAndUpdate(
+
+
+
+		//           { $set: { taskReference: taskReference, hash: state.hash } },
+		//         )
+		//       },
+	}
+
+	public async Task<List<ToDoEntity>> FindAllTasksAsync()
+	{
+		var findCursor = await ToDoMongoCollection.FindAsync(Builders<ToDoEntity>.Filter.Empty);
 		var tasks = await findCursor.ToListAsync();
 		return tasks;
 
 	}
 
-	public async Task<List<MongoTodDoModel>> FindAllUncompletedTasksAsync(string repositoryId)
+	public async Task<List<ToDoEntity>> FindAllUncompletedTasksAsync(string repositoryId)
 	{
-		var filter = Builders<MongoTodDoModel>.Filter.Eq(x => x.RepositoryId, repositoryId);
-		filter &= Builders<MongoTodDoModel>.Filter.Not(Builders<MongoTodDoModel>.Filter.Eq(x => x.Completed, false));
-		filter &= Builders<MongoTodDoModel>.Filter.Not(Builders<MongoTodDoModel>.Filter.Eq(x => x.TaskReference, null));
+		var filter = Builders<ToDoEntity>.Filter.Eq(x => x.RepositoryId, repositoryId);
+		filter &= Builders<ToDoEntity>.Filter.Not(Builders<ToDoEntity>.Filter.Eq(x => x.Completed, false));
+		filter &= Builders<ToDoEntity>.Filter.Not(Builders<ToDoEntity>.Filter.Eq(x => x.IssueReference, null));
 		var findCursor = await ToDoMongoCollection.FindAsync(filter);
 		var tasks = await findCursor.ToListAsync();
 		return tasks;
 
 	}
 
-	public async Task MarkAsCompletedAsync(MongoTodDoModel model)
+	public async Task MarkAsCompletedAsync(ToDoEntity model)
 	{
-		var filter = Builders<MongoTodDoModel>.Filter.Eq(x => x.Id, model.Id);
-		var updater = Builders<MongoTodDoModel>.Update.Set(x => x.Completed, true);
+		var filter = Builders<ToDoEntity>.Filter.Eq(x => x.Id, model.Id);
+		var updater = Builders<ToDoEntity>.Update.Set(x => x.Completed, true);
 		await ToDoMongoCollection.FindOneAndUpdateAsync(filter, updater);
 	}
 
 
-	public async Task UpdateStateAsync(MongoTodDoModel model, string newStateHash)
+	public async Task UpdateStateAsync(ToDoEntity model, string newStateHash)
 	{
-		var filter = Builders<MongoTodDoModel>.Filter.Eq(x => x.Id, model.Id);
-		var updater = Builders<MongoTodDoModel>.Update.Set(x => x.Hash, newStateHash);
+		var filter = Builders<ToDoEntity>.Filter.Eq(x => x.Id, model.Id);
+		var updater = Builders<ToDoEntity>.Update.Set(x => x.Hash, newStateHash);
 		await ToDoMongoCollection.FindOneAndUpdateAsync(filter, updater);
+	}
+
+	public async Task<ToDoEntity?> UpsertByLockOrIdAsync(ToDoEntity model)
+	{
+		var filter = Builders<ToDoEntity>.Filter.Eq(x => x.Id, model.Id);
+		filter |= (Builders<ToDoEntity>.Filter.Eq(x => x.OwnerProcessId, model.OwnerProcessId) | Builders<ToDoEntity>.Filter.Eq(x => x.OwnerProcessTimestamp, model.OwnerProcessTimestamp));
+		var item = await UpsertAsync(filter, model);
+		return item;
+	}
+
+	public async Task<ToDoEntity?> UpsertByIdAsync(ToDoEntity model)
+	{
+		var filter = Builders<ToDoEntity>.Filter.Eq(x => x.Id, model.Id);
+		var item = await UpsertAsync(filter, model);
+		return item;
+	}
+
+	private async Task<ToDoEntity?> UpsertAsync(FilterDefinition<ToDoEntity>? filter, ToDoEntity model)
+	{
+		var item = await ToDoMongoCollection.FindOneAndReplaceAsync(filter, model, new FindOneAndReplaceOptions<ToDoEntity, ToDoEntity>()
+		{
+			IsUpsert = true
+		});
+		return item;
 	}
 }

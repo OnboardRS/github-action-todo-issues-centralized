@@ -7,40 +7,17 @@ namespace OnboardRS.ToDoIssues.Business.Utilities;
 public class ToDoIssueAgent
 {
 	private readonly ILogger<ToDoIssueAgent> _logger;
-	private ToDoIssuesConfig? _toDoIssuesConfig;
+	private readonly ToDoIssuesConfig _toDoIssuesConfig;
 
-	private ToDoIssuesConfig ToDoIssuesConfig
-	{
-		get
-		{
-			if (null == _toDoIssuesConfig)
-			{
-				string message = $"Cannot use {nameof(ToDoIssuesConfig)} in class {nameof(ToDoIssueAgent)} until {nameof(SetToDoIssuesConfig)} as been called.";
-				_logger.LogError(message);
-				throw new ApplicationException(message);
-			}
-
-			return _toDoIssuesConfig;
-		}
-	}
-
-	public ToDoIssueAgent(ILogger<ToDoIssueAgent> logger)
+	public ToDoIssueAgent(ToDoIssuesConfig toDoIssuesConfig, ILogger<ToDoIssueAgent> logger)
 	{
 		_logger = logger;
-	}
-
-	public void SetToDoIssuesConfig(ToDoIssuesConfig config)
-	{
-		_toDoIssuesConfig = config;
-
-		//Show configuration values.
-		_logger.LogInformation(config.ToString());
+		_toDoIssuesConfig = toDoIssuesConfig;
 	}
 
 
 	public async Task ProcessRepoToDoActionsAsync()
 	{
-
 		_logger.LogInformation("Search for files with TODO tags...");
 		var toDoFiles = await GetToDoFilesFromRepositoryAsync();
 
@@ -49,7 +26,7 @@ public class ToDoIssueAgent
 		{
 			// TODO: Implement ignoring paths
 
-			if (ToDoIssuesConfig.ExcludeList.Any(x => x == toDoFile.FileName))
+			if (_toDoIssuesConfig.ExcludeList.Any(x => x == toDoFile.FileName))
 			{
 				continue;
 			}

@@ -8,12 +8,116 @@ using Octokit;
 using OnboardRS.ToDoIssues.Business.Models;
 using OnboardRS.ToDoIssues.Business.Models.Config;
 using OnboardRS.ToDoIssues.Business.Models.GeneratedCode.GitHub;
+using OnboardRS.ToDoIssues.Business.Models.Tasks;
 using RestSharp;
 
 namespace OnboardRS.ToDoIssues.Business.Utilities;
 
 public class GitHubAgent
 {
+
+	private readonly ILogger<GitHubAgent> _logger;
+	private readonly ToDoIssuesConfig _config;
+	private long? _issueRepoId;
+
+	private long IssueRepoId
+	{
+		get
+		{
+			if (null == _issueRepoId)
+			{
+				var repo = GetGitHubIssueRepoAsync().Result;
+				_issueRepoId = repo.Id;
+			}
+
+			return _issueRepoId.Value;
+		}
+	}
+
+	public GitHubAgent(ILogger<GitHubAgent> logger, ToDoIssuesConfig config)
+	{
+		_logger = logger;
+		_config = config;
+	}
+
+	//public async Task<string> CreateTask(ToDoIssueModel model)
+	//{
+
+	//	//	const graphql = require('@octokit/graphql').defaults({
+	//	//headers:
+	//	//		{
+	//	//authorization: `token ${
+	//	//				process.env.GITHUB_TOKEN ||
+	//	//invariant(false, 'Required GITHUB_TOKEN variable.')}`,
+	//	//    },
+	//	//  })
+	//	//  const result = await graphql(
+	//	//    `
+	//	//      mutation CreateIssue($input: CreateIssueInput!) {
+	//	//		createIssue(input: $input) {
+	//	//			issue {
+	//	//				number
+
+
+	//	//		  }
+	//	//		}
+	//	//	}
+	//	//    `,
+	//	//    {
+	//	//input:
+	//	//		{
+	//	//repositoryId: RepositoryInfo.issueSourceRepoContext.repositoryNodeId,
+	//	//        title: information.title,
+	//	//        body: information.body,
+	//	//      },
+	//	//    },
+	//	//  )
+	//	//  log.debug('Create issue result:', result)
+	//	//  return result.createIssue.issue.number
+	//	//	? `#${result.createIssue.issue.number}`
+	//	//    : invariant(
+	//	//		false,
+	//	//		'Failed to get issue number out of createIssue API call.',
+
+	//	//	  )
+	//}
+
+	public async Task CompleteTask(string issueReference)
+	{
+		//	const Octokit = (await import('@octokit/rest')).default
+		//  const octokit = new Octokit({
+		//	auth: `token ${
+		//		process.env.GITHUB_TOKEN ||
+		//invariant(false, 'Required GITHUB_TOKEN variable.')}`,
+		//  })
+		//  const result = await octokit.issues.update({
+		//    owner: RepositoryInfo.issueSourceRepoContext.repositoryOwner,
+		//	repo: RepositoryInfo.issueSourceRepoContext.repositoryName,
+		//	issue_number: +taskReference.substr(1),
+		//	state: 'closed',
+		//  })
+		//  log.debug('Issue close result:', result.data)
+	}
+
+	public async Task updateTask(string issueReference, ToDoIssueModel toDoIssueModel)
+	{
+		//	const Octokit = (await import('@octokit/rest')).default
+		//  const octokit = new Octokit({
+		//	auth: `token ${
+		//		process.env.GITHUB_TOKEN ||
+		//invariant(false, 'Required GITHUB_TOKEN variable.')}`,
+		//  })
+		//  const result = await octokit.issues.update({
+		//    owner: RepositoryInfo.issueSourceRepoContext.repositoryOwner,
+		//	repo: RepositoryInfo.issueSourceRepoContext.repositoryName,
+		//	issue_number: +taskReference.substr(1),
+		//	title: information.title,
+		//	body: information.body,
+		//  })
+		//  log.debug('Issue update result:', result.data)
+	}
+
+
 	//async void Main()
 	//{
 	//	var dropbox = Environment.GetEnvironmentVariable("Dropbox");
@@ -127,48 +231,44 @@ public class GitHubAgent
 	//	}
 	//}
 
-	private readonly GitHubConfig _config;
-
-	public GitHubAgent(GitHubConfig config)
+	public async Task<Repository> GetGitHubIssueRepoAsync()
 	{
-		_config = config;
+		var client = GetGitHubClient();
+		return await client.Repository.Get(_config.IssueRepoInfoModel.Owner, _config.IssueRepoInfoModel.Name);
 	}
 
-	public Repository GetGitHubRepoById(long repoId)
+	public async Task<Issue> GetGitHubIssueAsync(int issueId)
 	{
-		var tokenAuth = new Credentials(_config.AccessToken);
-		var github = new Octokit.GitHubClient(new ProductHeaderValue("onboard-productOps"));
-		github.Credentials = tokenAuth;
-		return github.Repository.Get(repoId).Result;
+		var client = GetGitHubClient();
+		return await client.Issue.Get(IssueRepoId, issueId);
 	}
 
-	public Repository GetGitHubRepoByName(string repo)
+	public async Task<Issue> CreateGitHubIssueAsync(ToDoIssueModel toDoIssueModel)
 	{
-		var tokenAuth = new Credentials(_config.AccessToken);
-		var github = new Octokit.GitHubClient(new ProductHeaderValue("onboard-productOps"));
-		github.Credentials = tokenAuth;
-		return github.Repository.Get(_config.Org, repo).Result;
+		var newIssue = new NewIssue(toDoIssueModel.Title);
+		newIssue.Body = toDoIssueModel.Body;
+		return await CreateGitHubIssueAsync(newIssue);
 	}
 
-	public Issue GetGitHubIssue(long repoId, int issueId)
+	public async Task<Issue> CreateGitHubIssueAsync(NewIssue newIssue)
 	{
-		var tokenAuth = new Credentials(_config.AccessToken);
-		var github = new Octokit.GitHubClient(new ProductHeaderValue("onboard-productOps"));
-		github.Credentials = tokenAuth;
-		return github.Issue.Get(repoId, issueId).Result;
+		var client = GetGitHubClient();
+		return await client.Issue.Create(IssueRepoId, newIssue);
 	}
 
+	private GitHubClient GetGitHubClient()
+	{
+		if (string.IsNullOrWhiteSpace(_config.GitHubAccessToken))
+		{
+			string noTokenMessage = $"No value for {nameof(_config.GitHubAccessToken)}. Check configuration input parameters and / or environment variables.";
+			_logger.LogError(noTokenMessage);
+			throw new ApplicationException(noTokenMessage);
+		}
+
+		var tokenAuth = new Credentials(_config.GitHubAccessToken);
+		var githubClient = new GitHubClient(new ProductHeaderValue(_config.IssueRepoInfoModel.Name));
+		githubClient.Credentials = tokenAuth;
+		return githubClient;
+	}
 
 }
-
-//public class CombinedAgent
-//{
-//	public void ConvertIssueToEpic(string repoName, int issueNumber)
-//	{
-//		var repo = GetGitHubRepoByName(repoName);
-//		var client = new ZenHubClient(_config.AccessToken);
-//		client.GetIssueClient(repo.Id, issueNumber).ConvertToEpicAsync().Result.Dump();
-
-
-//	}
-//}

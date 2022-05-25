@@ -3,11 +3,10 @@
 namespace OnboardRS.ToDoIssues.Business.Models.Mongo;
 
 
-
-public class MongoTodDoModel
+public class ToDoEntity
 {
 	/// <summary>
-	/// Globally-unique ID for the task.
+	/// Globally-unique ID for the issue.
 	/// </summary>
 	public ObjectId Id { get; set; }
 
@@ -18,10 +17,10 @@ public class MongoTodDoModel
 	public string RepositoryId { get; set; }
 
 	/// <summary>
-	/// The identifier of the associated task.
+	/// The identifier of the associated issue.
 	/// </summary>
 
-	public string? TaskReference { get; set; }
+	public string? IssueReference { get; set; }
 
 	/// <summary>
 	/// `true` if Issue is completed.
@@ -29,7 +28,7 @@ public class MongoTodDoModel
 	public bool? Completed { get; set; }
 
 	/// <summary>
-	/// When the task is created.
+	/// When the issue is created.
 	/// </summary>
 	public DateTime CreatedAt { get; set; }
 
@@ -44,29 +43,14 @@ public class MongoTodDoModel
 	public DateTime? OwnerProcessTimestamp { get; set; }
 
 	/// <summary>
-	/// Hash of the task body contents
+	/// Hash of the issue body contents
 	/// </summary>
 	public string? Hash { get; set; }
 
-	public MongoTodDoModel(ObjectId id, string repositoryId)
+	public ToDoEntity(ObjectId id, string repositoryId)
 	{
 		Id = id;
 		RepositoryId = repositoryId;
 		CreatedAt = DateTime.UtcNow;
 	}
 }
-
-//type TaskResolutionProcedure =
-//  | { existingTaskReference: string }
-//  | { acquireTaskCreationLock(): Promise<TaskCreationLock> }
-
-//type TaskCreationLock = {
-//  finish(taskReference: string, state: ITaskState): Promise<void>
-//}
-
-//type Task = {
-//  taskReference: string
-//  state: ITaskState
-//  markAsCompleted(): Promise<void>
-//  updateState(newState: ITaskState): Promise<void>
-//}

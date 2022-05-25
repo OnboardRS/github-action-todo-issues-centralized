@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace OnboardRS.ToDoIssues.Business.Utilities;
 
-public class TypedConsoleLogger<T> : ConsoleLogger, ILogger<T>
+public class ConsoleLogger<T> : ConsoleLogger, ILogger<T>
 {
 
 }
