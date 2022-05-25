@@ -20,7 +20,6 @@ echo "Using outputPath of $outputPath"
 
 set -e
 jb inspectcode -o=$outputPath -a $solutionPath --build --severity=warning
-jb cleanupcode $solutionPath
 
 reportExists=$(ls -al | grep $outputPath | wc -l)
 if test $reportExists -eq 0
