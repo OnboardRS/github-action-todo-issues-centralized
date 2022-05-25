@@ -13,7 +13,6 @@ $solutionPath = $solutionPathInfo.Name
 $outputPath = "localQualityCheckResult.xml"
 Write-Output "Using solution: $solutionPath"
 jb inspectcode -o="$outputPath" -a $solutionPath --build --severity=warning
-jb cleanupcode $solutionPath --settings="$solutionPath.DotSettings"
 
 if (Test-Path -Path $outputPath) {
   Write-Output "Witing ouput of report:"
