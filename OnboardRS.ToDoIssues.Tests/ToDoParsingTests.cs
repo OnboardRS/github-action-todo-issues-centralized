@@ -79,10 +79,10 @@ public class ToDoParsingTests
 		var file = new ToDoMockFile("main.js", InheritedParserTestCase02String);
 		var result = await file.ParseToDosAsync();
 		Assert.AreEqual(4, result.Count, "Parse Length");
-		Assert.AreEqual("#1", result[0].Reference);
-		Assert.AreEqual("$wow", result[1].Reference);
-		Assert.AreEqual("todo-actions#1", result[2].Reference);
-		Assert.AreEqual("https://github.com/dtinth/todo-actions/issues/1", result[3].Reference);
+		Assert.AreEqual("#1", result[0].IssueReference);
+		Assert.AreEqual("$wow", result[1].IssueReference);
+		Assert.AreEqual("todo-actions#1", result[2].IssueReference);
+		Assert.AreEqual("https://github.com/dtinth/todo-actions/issues/1", result[3].IssueReference);
 	}
 
 

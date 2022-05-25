@@ -62,13 +62,13 @@ public class MongoAgent
 		_logger = logger;
 	}
 
-	public async Task<List<ToDoComparisonModel>> GetExistingToDoComparisonModelsAsync()
+	public async Task<List<ToDoPersistanceModel>> GetExistingToDoComparisonModelsAsync()
 	{
-		var comparisonModels = new List<ToDoComparisonModel>();
+		var comparisonModels = new List<ToDoPersistanceModel>();
 		var items = await FindAllUncompletedToDosAsync();
 		foreach (var toDoEntity in items)
 		{
-			var comparisonModel = new ToDoComparisonModel(toDoEntity);
+			var comparisonModel = new ToDoPersistanceModel(toDoEntity);
 			comparisonModels.Add(comparisonModel);
 		}
 

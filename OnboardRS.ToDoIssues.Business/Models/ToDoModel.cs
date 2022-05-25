@@ -10,7 +10,7 @@ public class ToDoModel : BaseReflectedToStringObject, IToDo
 	public string? Title { get; set; }
 
 	private string? _reference;
-	public string? Reference
+	public string? IssueReference
 	{
 		get { return _reference; }
 		set
@@ -25,7 +25,7 @@ public class ToDoModel : BaseReflectedToStringObject, IToDo
 		ToDoFile = file;
 		StartLine = startLine;
 		Prefix = prefix;
-		Reference = reference;
+		IssueReference = reference;
 		Suffix = suffix;
 		Title = suffix.Trim();
 		Body = string.Empty;

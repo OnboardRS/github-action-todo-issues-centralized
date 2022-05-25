@@ -80,7 +80,7 @@ public static class ModelActionExtension
 			Hash = todo.GetToDoHash(),
 			OwnerProcessId = null,
 			OwnerProcessTimestamp = null,
-			IssueReference = todo.Reference
+			IssueReference = todo.IssueReference
 		};
 		return model;
 	}

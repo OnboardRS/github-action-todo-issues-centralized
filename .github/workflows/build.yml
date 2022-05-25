@@ -16,6 +16,15 @@ jobs:
       - name: Restore Dependencies
         run: |
           dotnet restore
+      - name: Configure Coding Standards
+        uses: OnboardRS/github-action-code-quality@1.0.4
+        timeout-minutes: 5
+        with:
+          solutionPath: ${{ env.solutionName }}
+          gitHubCheckInToken: ${{ secrets.PAT_GITHUB_SERVICEACCOUNT }}
+          codingStandardsRepo: OnboardRS/coding-standards
+          gitHubActor: ${{ github.actor }}
+          gitHubArtifactToken: ${{ secrets.ARTIFACT_SERVICE_TOKEN }}
       - name: Tests
         run: |
           dotnet test --no-restore --filter FullyQualifiedName!~IntegrationTests

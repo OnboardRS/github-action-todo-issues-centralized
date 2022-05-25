@@ -20,14 +20,14 @@ namespace OnboardRS.ToDoIssues.Business.Models.Tasks;
 //	            updateState(newState: ITaskState): Promise<void>
 //            }
 
-public class ToDoComparisonModel
+public class ToDoPersistanceModel
 {
 	public ToDoIssueModel? ToDoIssueModel { get; set; }
 	public ToDoEntity ToDoEntity { get; set; }
 	public string? DbIssueHash { get; set; }
 	public string? DbIssueReference { get; set; }
 
-	public ToDoComparisonModel(ToDoEntity toDoEntity)
+	public ToDoPersistanceModel(ToDoEntity toDoEntity)
 	{
 		ToDoEntity = toDoEntity;
 		DbIssueHash = toDoEntity.Hash;
