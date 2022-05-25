@@ -11,14 +11,12 @@ public class RepoInfoModel : BaseReflectedToStringObject
 	public string Name { get; set; }
 	public string Owner { get; set; }
 	public string Branch { get; set; }
-	public string NodeId { get; set; }
 
-	public RepoInfoModel(string name, string owner, string branch, string? nodeId = null)
+	public RepoInfoModel(string name, string owner, string branch)
 	{
 		Name = name;
 		Owner = owner;
 		Branch = branch;
-		NodeId = nodeId ?? string.Empty;
 	}
 
 	public void ValidateInputs()
@@ -26,6 +24,5 @@ public class RepoInfoModel : BaseReflectedToStringObject
 		AssertNotNullOrNotEmpty(nameof(Name),Name);
 		AssertNotNullOrNotEmpty(nameof(Owner), Owner);
 		AssertNotNullOrNotEmpty(nameof(Branch), Branch);
-		AssertNotNullOrNotEmpty(nameof(NodeId), NodeId);
 	}
 }

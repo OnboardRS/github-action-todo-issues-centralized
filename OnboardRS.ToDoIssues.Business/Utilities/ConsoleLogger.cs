@@ -3,6 +3,10 @@ using Microsoft.Extensions.Logging;
 
 namespace OnboardRS.ToDoIssues.Business.Utilities;
 
+public class ConsoleLogger<T> : ConsoleLogger, ILogger<T>
+{
+
+}
 public class ConsoleLogger : ILogger, IDisposable
 {
 	public ConsoleLogger()

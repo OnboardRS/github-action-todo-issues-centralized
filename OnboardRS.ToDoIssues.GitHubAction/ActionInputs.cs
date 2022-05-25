@@ -120,8 +120,8 @@ public class ActionInputs : BaseReflectedToStringObject
 
 	public ToDoIssuesConfig ToToDoIssuesConfig()
 	{
-		RepoInfoModel codeRepo = new RepoInfoModel(CodeRepoName, CodeRepoOwner, CodeRepoBranch, CodeRepoNodeId);
-		RepoInfoModel issueRepo = new RepoInfoModel(IssueRepoName, IssueRepoOwner, IssueRepoBranch, IssueRepoNodeId);
+		RepoInfoModel codeRepo = new RepoInfoModel(CodeRepoName, CodeRepoOwner, CodeRepoBranch);
+		RepoInfoModel issueRepo = new RepoInfoModel(IssueRepoName, IssueRepoOwner, IssueRepoBranch);
 
 		var config = new ToDoIssuesConfig(GitHubActionToken, MongoDbUrl, IssueLabel, codeRepo, issueRepo);
 		return config;
