@@ -33,7 +33,7 @@ public class BaseIntegrationTests
 		var thisBranch = "integration-tests";
 		CodeRepo = new RepoInfoModel(thisRepo, thisOwner, thisBranch);
 		IssueRepo = new RepoInfoModel(thisRepo, thisOwner, thisBranch);
-		ToDoIssuesConfig = new ToDoIssuesConfig(_githubToken, _mongoConnectionString, "IntegrationTest,test-integration", CodeRepo, IssueRepo)
+		ToDoIssuesConfig = new ToDoIssuesConfig(_githubToken, _mongoConnectionString, "IntegrationTest,test-integration","readme.md,Dockerfile", CodeRepo, IssueRepo)
 		                   {
 							   MongoDbName = "ToDo",
 							   MongoDbCollectionName = MongoAgent.TODO_COLLECTION_NAME+"Test"
