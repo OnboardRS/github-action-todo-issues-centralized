@@ -10,30 +10,50 @@ public class ActionInputs : BaseReflectedToStringObject
 			   HelpText = "The code repo owner, for example: \"OnboardRS\". Assign from `github.repository_owner`.")]
 	public string CodeRepoOwner { get; set; } = string.Empty;
 
+	private string _codeRepoName = string.Empty;
 	[Option("code-repo-name",
 			   Required = true,
 			   HelpText = "The code repo repository name, for example: \"github-action-todo-issues-centralized\". Assign from `github.repository`.")]
-	public string CodeRepoName { get; set; } = string.Empty;
-
+	public string CodeRepoName
+	{
+		get => _codeRepoName;
+		set => ParseAndAssign(value, str => _codeRepoName = str);
+	}
+	private string _codeRepoBranch = string.Empty;
 	[Option("code-repo-branch",
 			   Required = true,
 			   HelpText = "The code repo branch name, for example: \"refs/heads/develop\". Assign from `github.ref`.")]
-	public string CodeRepoBranch { get; set; } = string.Empty;
+	public string CodeRepoBranch
+	{
+		get => _codeRepoBranch;
+		set => ParseAndAssign(value, str => _codeRepoBranch = str);
+	}
 
 	[Option("issue-repo-owner",
 			   Required = true,
 			   HelpText = "The issue repo owner, for example: \"OnboardRS\". Assign from centralized issue repo.")]
 	public string IssueRepoOwner { get; set; } = string.Empty;
 
+	private string _issueRepoName = string.Empty;
 	[Option("issue-repo-name",
 			   Required = true,
 			   HelpText = "The issue repo repository name, for example: \"zenhub-dev\". Assign from centralized issue repo.")]
-	public string IssueRepoName { get; set; } = string.Empty;
+	public string IssueRepoName
+	{
+		get => _issueRepoName;
+		set => ParseAndAssign(value, str => _issueRepoName = str);
+	}
 
+	private string _issueRepoBranchName = string.Empty;
 	[Option("issue-repo-branch",
 			   Required = true,
 			   HelpText = "The issue repo branch name, for example: \"refs/heads/master\". Assign from centralized issue repo.")]
-	public string IssueRepoBranch { get; set; } = string.Empty;
+	public string IssueRepoBranch
+	{
+		get => _issueRepoBranchName;
+		set => ParseAndAssign(value, str => _issueRepoBranchName = str);
+	}
+
 
 	[Option("issue-labels-csv",
 			   Required = true,
@@ -54,6 +74,16 @@ public class ActionInputs : BaseReflectedToStringObject
 			   Required = true,
 			   HelpText = $"Comma separated values for case insensitive file names you don't want to search for {ToDoConstants.TO_DO_MARKER}s. Assign per usage.")]
 	public string ExcludedFileNamesCsv { get; set; } = string.Empty;
+
+	private static void ParseAndAssign(string? value, Action<string> assign)
+	{
+		if (value is { Length: > 0 })
+		{
+			assign(value.Split("/")[^1]);
+		}
+	}
+
+
 
 	public ToDoIssuesConfig ToToDoIssuesConfig()
 	{

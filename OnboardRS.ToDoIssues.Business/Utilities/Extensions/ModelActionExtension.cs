@@ -75,7 +75,8 @@ public static class ModelActionExtension
 			}
 			else
 			{
-				var gitAddCommand = $"git add {string.Join(" ", changedFiles)}";
+				var changeFileNames = changedFiles.Select(x => x.FileName).ToList();
+				var gitAddCommand = $"git add {string.Join(" ", changeFileNames)}";
 				await gitAddCommand.RunBashCommandAsync(logger);
 				var gitCommitCommand = $"git commit -m \"{commitMessage}\"";
 				await gitCommitCommand.RunBashCommandAsync(logger);
