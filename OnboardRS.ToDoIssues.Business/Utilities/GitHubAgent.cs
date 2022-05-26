@@ -90,11 +90,12 @@ public class GitHubAgent
 
 	public async Task<Issue> CreateGitHubIssueAsync(ToDoIssueModel toDoIssueModel)
 	{
-		// TODO [30]: Test new todo label.
+		// TODO [#30]: Test new todo label.
 		var newIssue = new NewIssue(toDoIssueModel.Title)
 		{
 			Body = toDoIssueModel.Body
 		};
+		// TODO: Test new todo label.
 		foreach (var issueLabel in _config.IssueLabels)
 		{
 			newIssue.Labels.Add(issueLabel);
