@@ -21,7 +21,7 @@ static async Task StartToDoIssueProcessAsync(ActionInputs inputs, IHost host)
 	logger.LogInformation("Program: Test information log via logger.");
 	Console.WriteLine("Program: Test console write line.");
 
-	logger.LogInformation($"{ToDoConstants.TASK_MARKER} Label:");
+	logger.LogInformation($"{ToDoConstants.TO_DO_MARKER} Label:");
 	logger.LogInformation(inputs.IssueLabel);
 
 	var toDoIssueAgent = Get<ToDoIssueAgent>(host);

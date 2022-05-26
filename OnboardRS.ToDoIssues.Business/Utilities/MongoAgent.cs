@@ -12,8 +12,8 @@ public class MongoAgent
 
 	private readonly ILogger<MongoAgent> _logger;
 	private IMongoClient? _mongoClient;
-	private IMongoCollection<ToDoEntity>? _taskCollection;
-	private IMongoDatabase? _taskDataBase;
+	private IMongoCollection<ToDoEntity>? _toDoCollection;
+	private IMongoDatabase? _toDoDataBase;
 
 
 	public MongoAgent(ToDoIssuesConfig config, ILogger<MongoAgent> logger)
@@ -42,14 +42,14 @@ public class MongoAgent
 	{
 		get
 		{
-			if (null == _taskDataBase)
+			if (null == _toDoDataBase)
 			{
 				var mongoUrl = new MongoUrl(_config.MongoDbUrl);
-				_taskDataBase = MongoClient.GetDatabase(_config.MongoDbName);
+				_toDoDataBase = MongoClient.GetDatabase(_config.MongoDbName);
 				ValidateDataBaseConnection();
 			}
 
-			return _taskDataBase;
+			return _toDoDataBase;
 		}
 	}
 
@@ -57,7 +57,7 @@ public class MongoAgent
 	{
 		get
 		{
-			if (null == _taskCollection)
+			if (null == _toDoCollection)
 			{
 				var exists = CollectionExistsAsync(_config.MongoDbCollectionName).Result;
 				if (!exists)
@@ -65,10 +65,10 @@ public class MongoAgent
 					MongoDatabase.CreateCollection(_config.MongoDbCollectionName);
 				}
 
-				_taskCollection = MongoDatabase.GetCollection<ToDoEntity>(_config.MongoDbCollectionName);
+				_toDoCollection = MongoDatabase.GetCollection<ToDoEntity>(_config.MongoDbCollectionName);
 			}
 
-			return _taskCollection;
+			return _toDoCollection;
 		}
 	}
 
@@ -98,7 +98,7 @@ public class MongoAgent
 	/// </summary>
 	/// <param name="toDo"></param>
 	/// <returns></returns>
-	public async Task<ToDoEntity?> AcquireTaskCreationLock(IToDo toDo)
+	public async Task<ToDoEntity?> AcquireToDoCreationLock(IToDo toDo)
 	{
 		if (null == toDo.IssueReference)
 		{
@@ -123,15 +123,8 @@ public class MongoAgent
 		var entity = existing ?? ToCreatableEntity(toDo, stubIssueReference, _config.CodeRepoInfoModel.Name);
 		entity.OwnerProcessTimestamp = DateTime.UtcNow;
 		entity.OwnerProcessId = ProcessId;
-		var lockedEntity = await UpsertByIdAsync(entity);
+		var lockedEntity = await UpsertEntityAsync(entity);
 		return lockedEntity;
-	}
-
-	public async Task ReleaseTaskCreationLock(ToDoEntity toDo)
-	{
-		toDo.OwnerProcessTimestamp = null;
-		toDo.OwnerProcessId = null;
-		await UpsertByIdAsync(toDo);
 	}
 
 	public static ToDoEntity ToCreatableEntity(IToDo todo, string stubIssueReference, string repositoryId)
@@ -175,11 +168,11 @@ public class MongoAgent
 		return entity;
 	}
 
-	public async Task<List<ToDoEntity>> FindAllTasksAsync()
+	public async Task<List<ToDoEntity>> FindAllToDosAsync()
 	{
 		var findCursor = await ToDoMongoCollection.FindAsync(Builders<ToDoEntity>.Filter.Empty);
-		var tasks = await findCursor.ToListAsync();
-		return tasks;
+		var toDos = await findCursor.ToListAsync();
+		return toDos;
 	}
 
 	public async Task<List<ToDoEntity>> FindAllUncompletedToDosAsync()
@@ -188,8 +181,8 @@ public class MongoAgent
 		filter &= Builders<ToDoEntity>.Filter.Not(Builders<ToDoEntity>.Filter.Eq(x => x.Completed, false));
 		filter &= Builders<ToDoEntity>.Filter.Not(Builders<ToDoEntity>.Filter.Eq(x => x.IssueReference, null));
 		var findCursor = await ToDoMongoCollection.FindAsync(filter);
-		var tasks = await findCursor.ToListAsync();
-		return tasks;
+		var toDos = await findCursor.ToListAsync();
+		return toDos;
 	}
 
 	public async Task MarkAsCompletedAsync(ToDoEntity model)
@@ -199,23 +192,7 @@ public class MongoAgent
 		await ToDoMongoCollection.FindOneAndUpdateAsync(filter, updater);
 	}
 
-
-	public async Task UpdateStateAsync(ToDoEntity model, string newStateHash)
-	{
-		var filter = Builders<ToDoEntity>.Filter.Eq(x => x.Id, model.Id);
-		var updater = Builders<ToDoEntity>.Update.Set(x => x.Hash, newStateHash);
-		await ToDoMongoCollection.FindOneAndUpdateAsync(filter, updater);
-	}
-
-	public async Task<ToDoEntity?> UpsertByLockOrIdAsync(ToDoEntity model)
-	{
-		var filter = Builders<ToDoEntity>.Filter.Eq(x => x.Id, model.Id);
-		filter |= Builders<ToDoEntity>.Filter.Eq(x => x.OwnerProcessId, model.OwnerProcessId) | Builders<ToDoEntity>.Filter.Eq(x => x.OwnerProcessTimestamp, model.OwnerProcessTimestamp);
-		var item = await UpsertAsync(filter, model);
-		return item;
-	}
-
-	public async Task<ToDoEntity?> UpsertByIdAsync(ToDoEntity model)
+	public async Task<ToDoEntity?> UpsertEntityAsync(ToDoEntity model)
 	{
 		var filter = Builders<ToDoEntity>.Filter.Eq(x => x.Id, model.Id);
 		var item = await UpsertAsync(filter, model);

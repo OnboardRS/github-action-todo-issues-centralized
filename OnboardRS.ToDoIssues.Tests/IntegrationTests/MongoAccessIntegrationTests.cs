@@ -45,8 +45,7 @@ public class MongoAccessIntegrationTests : BaseIntegrationTests
 		var toDo = GetDefaultTestToDo();
 		var stubIssueReference = Guid.NewGuid().ToString();
 		toDo.IssueReference = "$" + stubIssueReference;
-		var lockedEntity = await MongoAgent.AcquireTaskCreationLock(toDo);
+		var lockedEntity = await MongoAgent.AcquireToDoCreationLock(toDo);
 		Assert.IsNotNull(lockedEntity);
-
 	}
 }

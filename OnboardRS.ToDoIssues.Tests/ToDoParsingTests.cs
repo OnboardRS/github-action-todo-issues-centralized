@@ -8,26 +8,26 @@ public class ToDoParsingTests
 
 	public string InheritedParserTestCase01String = @$"
 
-        // {ToDoConstants.TASK_MARKER}: Item 1
+        // {ToDoConstants.TO_DO_MARKER}: Item 1
 
-        // {ToDoConstants.TASK_MARKER}: Item 2
+        // {ToDoConstants.TO_DO_MARKER}: Item 2
         // Body
 
-        // {ToDoConstants.TASK_MARKER}: Item 3
+        // {ToDoConstants.TO_DO_MARKER}: Item 3
         //
         // Extended body
 
-        // Not part of {ToDoConstants.TASK_MARKER}
+        // Not part of {ToDoConstants.TO_DO_MARKER}
 
         /*
-         * {ToDoConstants.TASK_MARKER}: Item 4
+         * {ToDoConstants.TO_DO_MARKER}: Item 4
          * Body
          *
          * Extended body
          */
 
         <!--
-          - {ToDoConstants.TASK_MARKER}: Item 5
+          - {ToDoConstants.TO_DO_MARKER}: Item 5
           - Body
           -
           - Extended body
@@ -35,7 +35,7 @@ public class ToDoParsingTests
           Not part of TODO
           -->
         
-          # {ToDoConstants.TASK_MARKER}: Item 6
+          # {ToDoConstants.TO_DO_MARKER}: Item 6
           # Body
           #
           # Extended body
@@ -65,13 +65,13 @@ public class ToDoParsingTests
 	}
 
 
-	private string InheritedParserTestCase02String = @$"		// {ToDoConstants.TASK_MARKER} [#1]: Item 1
+	private string InheritedParserTestCase02String = @$"		// {ToDoConstants.TO_DO_MARKER} [#1]: Item 1
 
-		// {ToDoConstants.TASK_MARKER} [$wow]: Item 2
+		// {ToDoConstants.TO_DO_MARKER} [$wow]: Item 2
 
-	// {ToDoConstants.TASK_MARKER} [todo-actions#1]: Item 3
+	// {ToDoConstants.TO_DO_MARKER} [todo-actions#1]: Item 3
 
-	// {ToDoConstants.TASK_MARKER} [https://github.com/dtinth/todo-actions/issues/1]: Item 4";
+	// {ToDoConstants.TO_DO_MARKER} [https://github.com/dtinth/todo-actions/issues/1]: Item 4";
 
 	[TestMethod]
 	public void InheritedParserTestCase02DetectsReference()
@@ -86,7 +86,7 @@ public class ToDoParsingTests
 	}
 
 
-	private string InheritedParserTestCase03String = @$"        // {ToDoConstants.TASK_MARKER}:
+	private string InheritedParserTestCase03String = @$"        // {ToDoConstants.TO_DO_MARKER}:
         // Title
         // Body";
 
@@ -101,13 +101,13 @@ public class ToDoParsingTests
 	}
 
 	[TestMethod]
-	[DataRow($"// {ToDoConstants.TASK_MARKER} [#14]: Dogs", true, "//", "#14", "Dogs")]
-	[DataRow($"// {ToDoConstants.TASK_MARKER}: Item 1", true, "//", "", "Item 1")]
-	[DataRow($"// {ToDoConstants.TASK_MARKER}: Item 2", true, "//", "", "Item 2")]
-	[DataRow($"// {ToDoConstants.TASK_MARKER}: Item 3", true, "//", "", "Item 3")]
-	[DataRow($" * {ToDoConstants.TASK_MARKER}: Item 4", true, "*", "", "Item 4")]
-	[DataRow($" - {ToDoConstants.TASK_MARKER}: Item 5", true, "-", "", "Item 5")]
-	[DataRow($"# {ToDoConstants.TASK_MARKER}: Item 6", true, "#", "", "Item 6")]
+	[DataRow($"// {ToDoConstants.TO_DO_MARKER} [#14]: Dogs", true, "//", "#14", "Dogs")]
+	[DataRow($"// {ToDoConstants.TO_DO_MARKER}: Item 1", true, "//", "", "Item 1")]
+	[DataRow($"// {ToDoConstants.TO_DO_MARKER}: Item 2", true, "//", "", "Item 2")]
+	[DataRow($"// {ToDoConstants.TO_DO_MARKER}: Item 3", true, "//", "", "Item 3")]
+	[DataRow($" * {ToDoConstants.TO_DO_MARKER}: Item 4", true, "*", "", "Item 4")]
+	[DataRow($" - {ToDoConstants.TO_DO_MARKER}: Item 5", true, "-", "", "Item 5")]
+	[DataRow($"# {ToDoConstants.TO_DO_MARKER}: Item 6", true, "#", "", "Item 6")]
 
 	public void ParseLineForToDoTest(string testString, bool isMatch, string expectedPrefix, string expectedReference, string expectedSuffix)
 	{
