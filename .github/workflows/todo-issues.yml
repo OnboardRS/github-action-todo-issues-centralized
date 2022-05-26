@@ -23,5 +23,5 @@ jobs:
           issue-repo-branch: ${{ github.ref }}
           issue-labels-csv: 'github-actions'
           github-action-token: ${{ secrets.GITHUB_TOKEN }}
-          mongo-db-url: ${{ secrets.TODO_ACTIONS_MONGO_URL }}
+          mongo-db-url: ${{ secrets.TODO_CENTRALIZED_MONGO_URL }}
           excluded-file-names-csv: 'Dockerfile,readme.md'
