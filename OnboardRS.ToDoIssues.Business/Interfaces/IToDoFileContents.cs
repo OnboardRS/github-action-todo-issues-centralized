@@ -2,9 +2,6 @@
 
 public interface IToDoFileContents
 {
-	public const string WINDOWS_LINE_ENDING = "\r\n";
-	public const string UNIX_LINE_ENDING = "\n";
-
 	bool Changed { get; set; }
 
 	/// <summary>

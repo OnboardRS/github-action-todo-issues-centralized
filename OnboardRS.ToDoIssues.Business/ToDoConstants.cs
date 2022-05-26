@@ -2,6 +2,8 @@
 
 public static class ToDoConstants
 {
+	public const string WINDOWS_LINE_ENDING = "\r\n";
+	public const string UNIX_LINE_ENDING = "\n";
 	public const string TO_DO_MARKER = "TODO";
 	public const string STUB_REFERENCE_MARKER = "$";
 }

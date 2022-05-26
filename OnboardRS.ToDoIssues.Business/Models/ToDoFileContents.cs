@@ -13,7 +13,7 @@ public class ToDoFileContents : IToDoFileContents
 
 	public ToDoFileContents(string contents)
 	{
-		Lines = contents.Replace(IToDoFileContents.WINDOWS_LINE_ENDING, IToDoFileContents.UNIX_LINE_ENDING).Split(IToDoFileContents.UNIX_LINE_ENDING).ToList();
+		Lines = contents.Replace(ToDoConstants.WINDOWS_LINE_ENDING, ToDoConstants.UNIX_LINE_ENDING).Split(ToDoConstants.UNIX_LINE_ENDING).ToList();
 	}
 
 	public void ChangeLine(int lineIndex, string newLineContents)
@@ -24,6 +24,6 @@ public class ToDoFileContents : IToDoFileContents
 
 	public override string ToString()
 	{
-		return string.Join(IToDoFileContents.UNIX_LINE_ENDING, Lines);
+		return string.Join(ToDoConstants.UNIX_LINE_ENDING, Lines);
 	}
 }

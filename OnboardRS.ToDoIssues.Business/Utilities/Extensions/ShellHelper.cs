@@ -23,19 +23,19 @@ public static class ShellHelper
 
 		try
 		{
-			logger.LogInformation($"Running command {cmd}");
+			logger.LogInformation($"{nameof(RunBashCommandAsync)}: Running command [{cmd}]");
 			process.Start();
 			var output = await process.StandardOutput.ReadToEndAsync();
-			logger.LogInformation($"Result:\n{output}");
+			logger.LogInformation($"{nameof(RunBashCommandAsync)} Result:\n{output}");
 			await process.WaitForExitAsync();
 
 			return output;
 		}
 		catch (Exception e)
 		{
-			logger.LogError(e, $"Command {cmd} failed");
+			logger.LogError(e, $"{nameof(RunBashCommandAsync)}: Command [{cmd}] failed");
 			var errorOutput = await process.StandardError.ReadToEndAsync();
-			throw new ApplicationException($"Bash error: {errorOutput}", e);
+			throw new ApplicationException($"{nameof(RunBashCommandAsync)} Bash error: {errorOutput}", e);
 		}
 	}
 }

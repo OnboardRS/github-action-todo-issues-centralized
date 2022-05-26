@@ -1,4 +1,5 @@
-﻿using OnboardRS.ToDoIssues.Business.Interfaces;
+﻿using OnboardRS.ToDoIssues.Business;
+using OnboardRS.ToDoIssues.Business.Interfaces;
 using OnboardRS.ToDoIssues.Business.Utilities;
 
 namespace OnboardRS.ToDoIssues.GitHubAction.Extensions;
@@ -15,7 +16,7 @@ public static class ServiceCollectionExtensions
 			parser.WithNotParsed(
 			                     errors =>
 			                     {
-				                     logger.LogError(string.Join(IToDoFileContents.UNIX_LINE_ENDING, errors.Select(error => error.ToString())));
+				                     logger.LogError(string.Join(ToDoConstants.UNIX_LINE_ENDING, errors.Select(error => error.ToString())));
 				                     Environment.Exit(ExitCodes.ACTION_PARSE_ERROR);
 			                     });
 

@@ -105,7 +105,7 @@ public class ToDoIssueAgent
 		var result = await $"git grep -Il {ToDoConstants.TO_DO_MARKER}".RunBashCommandAsync(_logger);
 
 		//split on newlines and remove duplicates
-		var paths = result.Split("\n").ToHashSet().ToList();
+		var paths = result.Split(ToDoConstants.UNIX_LINE_ENDING, StringSplitOptions.RemoveEmptyEntries).ToHashSet().ToList();
 
 		_logger.LogInformation($"Parsing {ToDoConstants.TO_DO_MARKER} tags...");
 		var files = new List<IToDoFile>();
