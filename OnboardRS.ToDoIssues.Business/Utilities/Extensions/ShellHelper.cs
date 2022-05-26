@@ -26,7 +26,12 @@ public static class ShellHelper
 			logger.LogInformation($"{nameof(RunBashCommandAsync)}: Running command [{cmd}]");
 			process.Start();
 			var output = await process.StandardOutput.ReadToEndAsync();
-			logger.LogInformation($"{nameof(RunBashCommandAsync)} Result:\n{output}");
+			var errorOutput = await process.StandardError.ReadToEndAsync();
+			logger.LogInformation($"{nameof(RunBashCommandAsync)} Standard Output:\n{output}");
+			if (!string.IsNullOrWhiteSpace(errorOutput))
+			{
+				logger.LogInformation($"{nameof(RunBashCommandAsync)} Error Output:\n{errorOutput}");
+			}
 			await process.WaitForExitAsync();
 
 			return output;
