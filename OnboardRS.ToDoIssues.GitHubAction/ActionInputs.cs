@@ -8,7 +8,7 @@ public class ActionInputs : BaseReflectedToStringObject
 	private string _codeRepoBranchName = null!;
 	private string _codeRepoOwner = null!;
 	private string _codeRepoRepositoryName = null!;
-	private string _exludedFileNamesCsv = null!;
+	private string _excludedFileNamesCsv = null!;
 	private string _gitHubActionToken = null!;
 	private string _issueLabel = null!;
 	private string _issueRepoBranchName = null!;
@@ -103,8 +103,8 @@ public class ActionInputs : BaseReflectedToStringObject
 			   HelpText = $"Comma separated values for case insensitive file names you don't want to search for {ToDoConstants.TO_DO_MARKER}s. Assign per usage.")]
 	public string ExcludedFileNamesCsv
 	{
-		get => _exludedFileNamesCsv;
-		set => ParseAndAssign(value, str => _exludedFileNamesCsv = str);
+		get => _excludedFileNamesCsv;
+		set => ParseAndAssign(value, str => _excludedFileNamesCsv = str);
 	}
 
 	public ToDoIssuesConfig ToToDoIssuesConfig()

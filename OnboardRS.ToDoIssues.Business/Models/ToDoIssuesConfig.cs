@@ -8,7 +8,7 @@ public class ToDoIssuesConfig : BaseReflectedToStringObject
 	public ToDoIssuesConfig(string gitHubAccessToken, string mongoDbUrl, string issueLabelsCsv, string excludeListCsv, RepoInfoModel codeRepoInfoModel, RepoInfoModel issueRepoInfoModel)
 	{
 		GitHubAccessToken = gitHubAccessToken;
-		MongoDbUrl = mongoDbUrl;
+		MongoDbUrl = mongoDbUrl.Trim(); //In case secret has extra space.
 		IssueLabels = SplitCsv(issueLabelsCsv);
 		ExcludeList = string.IsNullOrWhiteSpace(excludeListCsv) ? new List<string> { "README.md" } : SplitCsv(excludeListCsv);
 		CodeRepoInfoModel = codeRepoInfoModel;
