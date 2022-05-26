@@ -134,8 +134,8 @@ public class ActionInputs : BaseReflectedToStringObject
 		actionInputsLogger.LogInformation($"{nameof(IssueRepoName)}: [{IssueRepoName}]");
 		actionInputsLogger.LogInformation($"{nameof(IssueRepoBranch)}: [{IssueRepoBranch}]");
 		actionInputsLogger.LogInformation($"{nameof(IssueLabelCsv)}: [{IssueLabelCsv}]");
-		actionInputsLogger.LogInformation($"{nameof(GitHubActionToken)}: [*****]");
+		actionInputsLogger.LogInformation($"{nameof(GitHubActionToken)}: [{GitHubActionToken.Length} chars]");
 		actionInputsLogger.LogInformation($"{nameof(ExcludedFileNamesCsv)}: [{ExcludedFileNamesCsv}]");
-		actionInputsLogger.LogInformation($"{nameof(MongoDbUrl)}: [{MongoDbUrl}]");
+		actionInputsLogger.LogInformation($"{nameof(MongoDbUrl)}: [{MongoDbUrl.Length} chars]");
 	}
 }
