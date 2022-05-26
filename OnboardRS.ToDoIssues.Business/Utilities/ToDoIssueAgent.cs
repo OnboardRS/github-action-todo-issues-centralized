@@ -70,7 +70,7 @@ public class ToDoIssueAgent
 			foreach (var todo in todDsWithoutReference)
 			{
 				//Create a stub id to be replaced later, starts with $
-				todo.IssueReference = Guid.NewGuid().ToString().Replace("-", string.Empty));
+				todo.IssueReference = Guid.NewGuid().ToString().Replace("-", string.Empty);
 			}
 
 			var todoFilesWithoutReference = todDsWithoutReference.Select(x => x.ToDoFile).Distinct().ToList();
