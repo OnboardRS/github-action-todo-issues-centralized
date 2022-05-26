@@ -5,29 +5,16 @@ on:
 
 jobs:
   coding-standards:
-    name: Apply Coding Standards
+    name: Build And Test
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_SERVICEACCOUNT }}
+    env:      
       solutionName: ./todo-issues-centralized.sln
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.PAT_GITHUB_SERVICEACCOUNT }}
+        uses: actions/checkout@v2        
       - name: Restore Dependencies
         run: |
           dotnet restore
-      - name: Configure Coding Standards
-        uses: OnboardRS/github-action-code-quality@master
-        timeout-minutes: 5
-        with:
-          solutionPath: ${{ env.solutionName }}
-          gitHubCheckInToken: ${{ secrets.PAT_GITHUB_SERVICEACCOUNT }}
-          codingStandardsRepo: OnboardRS/coding-standards
-          gitHubActor: ${{ github.actor }}
-          gitHubArtifactToken: ${{ secrets.ARTIFACT_SERVICE_TOKEN }}
-          applyCSharpStandards: 'true'
       - name: Tests
         run: |
           dotnet test --no-restore --filter FullyQualifiedName!~IntegrationTests
