@@ -1,4 +1,4 @@
-name: Coding Standards
+name: Build And Test
 
 on:
   push:

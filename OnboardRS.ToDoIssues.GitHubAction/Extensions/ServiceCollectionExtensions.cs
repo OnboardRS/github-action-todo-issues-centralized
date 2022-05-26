@@ -16,7 +16,6 @@ public static class ServiceCollectionExtensions
 			                     errors =>
 			                     {
 				                     logger.LogError(string.Join(IToDoFileContents.UNIX_LINE_ENDING, errors.Select(error => error.ToString())));
-				                     ;
 				                     Environment.Exit(ExitCodes.ACTION_PARSE_ERROR);
 			                     });
 

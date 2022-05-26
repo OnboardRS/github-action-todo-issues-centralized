@@ -44,7 +44,6 @@ public class MongoAgent
 		{
 			if (null == _toDoDataBase)
 			{
-				var mongoUrl = new MongoUrl(_config.MongoDbUrl);
 				_toDoDataBase = MongoClient.GetDatabase(_config.MongoDbName);
 				ValidateDataBaseConnection();
 			}

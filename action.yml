@@ -42,7 +42,7 @@ inputs:
     required: true
   excluded-file-names-csv: 
     description:
-      'Comma separated values for case insensitive file names you don't want to search for TODOs. Assign per usage.'
+      'Comma separated values for case insensitive file names you do not wish scanned for TODOs. Assign per usage.'
     required: true
 runs:
   using: 'docker'
