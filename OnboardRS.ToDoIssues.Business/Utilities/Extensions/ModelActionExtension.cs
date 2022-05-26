@@ -131,7 +131,7 @@ public static class ModelActionExtension
 		var title = todo.Title ?? string.Empty;
 		var file = todo.ToDoFile.FileName;
 
-		// TODO [27]: Also link to end line in addition to just the starting line. (Inherited)
+		// TODO [#27]: Also link to end line in addition to just the starting line. (Inherited)
 		// This requires changing `IFile` interface and `File` class to also keep track of where the {ToDoConstants.TO_DO_MARKER} comment ends. 
 		var line = todo.StartLine;
 		var owner = config.CodeRepoInfoModel.Owner;
@@ -150,7 +150,7 @@ public static class ModelActionExtension
 		var hash = fullBody.HashString();
 		var model = new ToDoIssueModel(hash, title, fullBody)
 		{
-			IssueNumber = todo.IssueReference ?? string.Empty
+			IssueNumber = todo.IssueReference?.TrimStart('#') ?? string.Empty
 		};
 		return model;
 	}
