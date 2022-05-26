@@ -31,8 +31,6 @@ public class ToDoIssueAgent
 			toDoFiles = await GetToDoFilesFromRepositoryAsync();
 		}
 
-
-
 		// Parse out the ToDos.
 		var toDos = GetToDosFromToDoFiles(toDoFiles);
 
@@ -87,8 +85,7 @@ public class ToDoIssueAgent
 		var toDos = new List<IToDo>();
 		foreach (var toDoFile in toDoFiles)
 		{
-			//TODO: Implement ignoring paths
-			if (_toDoIssuesConfig.ExcludeList.Any(x => x == toDoFile.FileName))
+			if (_toDoIssuesConfig.ExcludeList.Any(x => string.Equals(x, toDoFile.FileName, StringComparison.OrdinalIgnoreCase)))
 			{
 				continue;
 			}

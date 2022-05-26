@@ -18,9 +18,10 @@ jobs:
           code-repo-owner: ${{ github.repository_owner }}
           code-repo-name: ${{ github.repository }}
           code-repo-branch: ${{ github.ref }}
-          code-repo-node-id: ${{ github.repository.node_id }}
-          issue-repo-owner: 'oh-hai-owner'
-          issue-repo-name: 'oh-hai-name'
-          issue-repo-branch: 'oh-hai-branch'
-          issue-repo-node-id: 'oh-hai-node-id'
-          issue-label: 'github-actions'
+          issue-repo-owner: ${{ github.repository_owner }}
+          issue-repo-name: ${{ github.repository }}
+          issue-repo-branch: ${{ github.ref }}
+          issue-labels-csv: 'github-actions'
+          github-action-token: ${{ secrets.GITHUB_TOKEN }}
+          mongo-db-url: ${{ secrets.TODO_ACTIONS_MONGO_URL }}
+          excluded-file-names-csv: 'Dockerfile,readme.md'

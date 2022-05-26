@@ -16,10 +16,6 @@ inputs:
     description:
       'The code repo branch name, for example: \"refs/heads/develop\". Assign from `github.repository.node_id`.'
     required: true
-  code-repo-node-id: 
-    description:
-      'The code repo node id, for example: \"R_kgDOHlz\". Assign from `github.repository.node_id`.'
-    required: true
   issue-repo-owner: 
     description:
       'The issue repo owner, for example: \"OnboardRS\". Assign from centralized issue repo.'
@@ -32,21 +28,21 @@ inputs:
     description:
       'The issue repo branch name, for example: \"refs/heads/master\". Assign from centralized issue repo.'
     required: true
-  issue-repo-node-id: 
+  issue-labels-csv: 
     description:
-      'The issue repo node id, for example: \"R_kgDOHlz\". Assign from centralized issue repo.'
-    required: true
-  issue-label: 
-    description:
-      'The issue label TODO GitHub issues should be created with, for example: \"github-actions\". Assign per usage.'
+      'The issue label(s) TODO GitHub issues should be created with, for example: \"github-actions\". Assign per usage.'
     required: true
   github-action-token: 
     description:
-      'The issue label TODO GitHub issues should be created with, for example: \"github-actions\". Assign per usage.'
+      'The GitHub token with permission to read and change the code. Assign per usage.'
     required: true
   mongo-db-url: 
     description:
-      'The issue label TODO GitHub issues should be created with, for example: \"github-actions\". Assign per usage.'
+      'The Mongo DB Url to use to store TODO hashes. Assign per usage.'
+    required: true
+  excluded-file-names-csv: 
+    description:
+      'Comma separated values for case insensitive file names you don't want to search for TODOs. Assign per usage.'
     required: true
 runs:
   using: 'docker'
@@ -58,19 +54,17 @@ runs:
   - ${{ inputs.code-repo-name }}
   - '--code-repo-branch'
   - ${{ inputs.code-repo-branch }}
-  - '--code-repo-node-id'
-  - ${{ inputs.code-repo-node-id }}  
   - '--issue-repo-owner'
   - ${{ inputs.issue-repo-owner }}
   - '--issue-repo-name'
   - ${{ inputs.issue-repo-name }}
   - '--issue-repo-branch'
   - ${{ inputs.issue-repo-branch }}
-  - '--issue-repo-node-id'
-  - ${{ inputs.issue-repo-node-id }}
-  - '--issue-label'
-  - ${{ inputs.issue-label }}
-	 - '--github-action-token'
+  - '--issue-labels-csv'
+  - ${{ inputs.issue-labels-csv }}
+	- '--github-action-token'
   - ${{ inputs.github-action-token }}
 	- '--mongo-db-url'
   - ${{ inputs.mongo-db-url }}
+  - '--excluded-file-names-csv'
+  - ${{ inputs.excluded-file-names-csv }}
