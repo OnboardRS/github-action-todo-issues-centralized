@@ -14,11 +14,11 @@ public static class ServiceCollectionExtensions
 		{
 			var parser = Default.ParseArguments(() => new ActionInputs(), args);
 			parser.WithNotParsed(
-			                     errors =>
-			                     {
-				                     logger.LogError(string.Join(ToDoConstants.UNIX_LINE_ENDING, errors.Select(error => error.ToString())));
-				                     Environment.Exit(ExitCodes.ACTION_PARSE_ERROR);
-			                     });
+								 errors =>
+								 {
+									 logger.LogError(string.Join(ToDoConstants.UNIX_LINE_ENDING, errors.Select(error => error.ToString())));
+									 Environment.Exit(ExitCodes.ACTION_PARSE_ERROR);
+								 });
 
 			actionInputs = parser.Value;
 		}
@@ -32,6 +32,7 @@ public static class ServiceCollectionExtensions
 		try
 		{
 			config.ValidateInputs();
+			actionInputs.LogInputs(new ConsoleLogger<ActionInputs>());
 		}
 		catch (ApplicationException e)
 		{
@@ -46,11 +47,11 @@ public static class ServiceCollectionExtensions
 		services.AddTransient<GitHubAgent>();
 		services.AddTransient<ToDoIssueAgent>();
 		services.AddLogging(options =>
-		                    {
-			                    options.AddConsole()
-				                    .AddDebug()
-				                    .SetMinimumLevel(LogLevel.Trace);
-		                    });
+							{
+								options.AddConsole()
+									.AddDebug()
+									.SetMinimumLevel(LogLevel.Trace);
+							});
 		return services;
 	}
 }

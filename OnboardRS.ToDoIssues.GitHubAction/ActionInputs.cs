@@ -126,6 +126,16 @@ public class ActionInputs : BaseReflectedToStringObject
 
 	public void LogInputs(ILogger<ActionInputs> actionInputsLogger)
 	{
-		actionInputsLogger.LogInformation($"{nameof(ActionInputs)}.{nameof(LogInputs)}\n{ToString()}");
+		actionInputsLogger.LogInformation($"{nameof(ActionInputs)}.{nameof(LogInputs)}");
+		actionInputsLogger.LogInformation($"{nameof(CodeRepoOwner)}: [{CodeRepoOwner}]");
+		actionInputsLogger.LogInformation($"{nameof(CodeRepoName)}: [{CodeRepoName}]");
+		actionInputsLogger.LogInformation($"{nameof(CodeRepoBranch)}: [{CodeRepoBranch}]");
+		actionInputsLogger.LogInformation($"{nameof(IssueRepoOwner)}: [{IssueRepoOwner}]");
+		actionInputsLogger.LogInformation($"{nameof(IssueRepoName)}: [{IssueRepoName}]");
+		actionInputsLogger.LogInformation($"{nameof(IssueRepoBranch)}: [{IssueRepoBranch}]");
+		actionInputsLogger.LogInformation($"{nameof(IssueLabelCsv)}: [{IssueLabelCsv}]");
+		actionInputsLogger.LogInformation($"{nameof(GitHubActionToken)}: [*****]");
+		actionInputsLogger.LogInformation($"{nameof(ExcludedFileNamesCsv)}: [{ExcludedFileNamesCsv}]");
+		actionInputsLogger.LogInformation($"{nameof(MongoDbUrl)}: [{MongoDbUrl}]");
 	}
 }
