@@ -42,6 +42,7 @@ public static class ServiceCollectionExtensions
 		services.AddSingleton(actionInputs);
 		services.AddSingleton(config);
 		services.AddTransient<MongoAgent>();
+		services.AddTransient<GitHubAgent>();
 		services.AddTransient<ToDoIssueAgent>();
 		services.AddLogging(options =>
 		                    {
