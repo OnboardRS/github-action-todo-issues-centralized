@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+using System.Diagnostics;
+using MongoDB.Bson;
 
 namespace OnboardRS.ToDoIssues.Business.Utilities;
 
@@ -9,7 +10,6 @@ public class ToDoIssueAgent
 	private readonly MongoAgent _mongoAgent;
 	private readonly ToDoIssuesConfig _toDoIssuesConfig;
 
-
 	public ToDoIssueAgent(ToDoIssuesConfig toDoIssuesConfig, ILogger<ToDoIssueAgent> logger, MongoAgent mongoAgent, GitHubAgent gitHubAgent)
 	{
 		_logger = logger;
@@ -18,11 +18,20 @@ public class ToDoIssueAgent
 		_mongoAgent = mongoAgent;
 	}
 
-
 	public async Task ProcessRepoToDoActionsAsync()
 	{
-		// Find the files via grep
-		var toDoFiles = await GetToDoFilesFromRepositoryAsync();
+		List<IToDoFile> toDoFiles;
+		if (Debugger.IsAttached)
+		{
+			toDoFiles = await GetToDoFilesFromDirectory(@"C:\GitHub\github-action-todo-issues-centralized");
+		}
+		else
+		{
+			// Find the files via grep
+			toDoFiles = await GetToDoFilesFromRepositoryAsync();
+		}
+
+
 
 		// Parse out the ToDos.
 		var toDos = GetToDosFromToDoFiles(toDoFiles);
@@ -55,7 +64,7 @@ public class ToDoIssueAgent
 	/// <param name="toDos"></param>
 	public async Task ProcessToDosWithoutReferenceAsync(List<IToDo> toDos)
 	{
-		var todDsWithoutReference = toDos.Where(todo => null == todo.IssueReference).ToList();
+		var todDsWithoutReference = toDos.Where(todo => string.IsNullOrWhiteSpace(todo.IssueReference)).ToList();
 		_logger.LogInformation($"{ToDoConstants.TASK_MARKER}s without references: {todDsWithoutReference.Count}");
 
 		if (todDsWithoutReference.Any())
@@ -78,7 +87,7 @@ public class ToDoIssueAgent
 		var toDos = new List<IToDo>();
 		foreach (var toDoFile in toDoFiles)
 		{
-			// TODO: Implement ignoring paths
+			//TODO: Implement ignoring paths
 			if (_toDoIssuesConfig.ExcludeList.Any(x => x == toDoFile.FileName))
 			{
 				continue;
@@ -108,6 +117,25 @@ public class ToDoIssueAgent
 		{
 			var toDoFile = new ToDoFile(path);
 			files.Add(toDoFile);
+		}
+
+		return files;
+	}
+
+	public async Task<List<IToDoFile>> GetToDoFilesFromDirectory(string directoryPath)
+	{
+		var paths = Directory.GetFiles(directoryPath, "*.cs", SearchOption.AllDirectories);
+		
+		_logger.LogInformation($"Parsing {ToDoConstants.TASK_MARKER} tags...");
+		var files = new List<IToDoFile>();
+
+		foreach (var path in paths)
+		{
+			var toDoFile = new ToDoFile(path);
+			if (toDoFile.Contents.Lines.Any(x => x.Contains(ToDoConstants.TASK_MARKER)))
+			{
+				files.Add(toDoFile);
+			}
 		}
 
 		return files;
@@ -148,10 +176,11 @@ public class ToDoIssueAgent
 		var unassociated = toDo.IssueReference.StartsWith(ToDoConstants.STUB_REFERENCE_MARKER);
 		if (unassociated)
 		{
-			// TODO: Isolate error when creating tasks
+			//TODO: Isolate error when creating tasks
 			// Failure to create a task should not prevent the action from progressing forward.
 			// We can simply skip processing this comment for now.
 			// Since this script is designed to be idempotent, it can be retried later.
+
 			var todoUniqueKey = toDo.IssueReference.Substring(1);
 			_logger.LogDebug($"Found unresolved {ToDoConstants.TASK_MARKER} issue reference {todoUniqueKey}, resolving task...");
 			var lockedEntity = await _mongoAgent.AcquireTaskCreationLock(toDo);

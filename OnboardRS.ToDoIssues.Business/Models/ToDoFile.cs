@@ -1,6 +1,6 @@
 ﻿namespace OnboardRS.ToDoIssues.Business.Models;
 
-public class ToDoFile : IToDoFile
+public class ToDoFile : BaseReflectedToStringObject, IToDoFile
 {
 	public ToDoFile(string fileName)
 	{

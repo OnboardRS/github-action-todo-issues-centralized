@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace OnboardRS.ToDoIssues.Business.Utilities.Extensions;
@@ -68,12 +69,19 @@ public static class ModelActionExtension
 				await changedFile.SaveToDoFileAsync();
 			}
 
-			var gitAddCommand = $"git add {string.Join(" ", changedFiles)}";
-			await gitAddCommand.RunBashCommandAsync(logger);
-			var gitCommitCommand = $"git commit -m \"{commitMessage}\"";
-			await gitCommitCommand.RunBashCommandAsync(logger);
-			var gitPushCommand = "git push \"https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git\" HEAD:\"$GITHUB_REF\"";
-			await gitPushCommand.RunBashCommandAsync(logger);
+			if (Debugger.IsAttached)
+			{
+				logger.LogInformation("Pretend I did the Git and what not.");
+			}
+			else
+			{
+				var gitAddCommand = $"git add {string.Join(" ", changedFiles)}";
+				await gitAddCommand.RunBashCommandAsync(logger);
+				var gitCommitCommand = $"git commit -m \"{commitMessage}\"";
+				await gitCommitCommand.RunBashCommandAsync(logger);
+				var gitPushCommand = "git push \"https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git\" HEAD:\"$GITHUB_REF\"";
+				await gitPushCommand.RunBashCommandAsync(logger);
+			}
 		}
 		else
 		{
@@ -106,7 +114,7 @@ public static class ModelActionExtension
 		var title = todo.Title ?? string.Empty;
 		var file = todo.ToDoFile.FileName;
 
-		// TODO: Also link to end line in addition to just the starting line.
+		//TODO: Also link to end line in addition to just the starting line.
 		// This requires changing `IFile` interface and `File` class to also keep track of where the {ToDoConstants.TASK_MARKER} comment ends.
 		var line = todo.StartLine;
 		var owner = config.CodeRepoInfoModel.Owner;
@@ -119,7 +127,7 @@ public static class ModelActionExtension
 		builder.AppendLine(todo.Body);
 		builder.AppendLine();
 		builder.AppendLine("---");
-		builder.AppendLine($"This issue has been automatically created by [github-action-todo-issues-centralized] (https://github.com/OnboardRS/github-action-todo-issues-centralizeds) based on a {ToDoConstants.TASK_MARKER} comment found in ${link}. ");
+		builder.AppendLine($"This issue has been automatically created by [github-action-todo-issues-centralized] (https://github.com/OnboardRS/github-action-todo-issues-centralized) based on a {ToDoConstants.TASK_MARKER} comment found in {link}. ");
 		builder.AppendLine("_");
 		var fullBody = builder.ToString();
 		var hash = fullBody.HashString();

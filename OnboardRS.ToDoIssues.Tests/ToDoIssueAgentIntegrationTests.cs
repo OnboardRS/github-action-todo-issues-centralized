@@ -1,7 +1,7 @@
 ﻿namespace OnboardRS.ToDoIssues.Tests;
 
 [TestClass]
-public class ToDoIssueAgentTests : BaseIntegrationTests
+public class ToDoIssueAgentIntegrationTests : BaseIntegrationTests
 {
 
 	private ToDoModel _toDoModel;
@@ -11,5 +11,11 @@ public class ToDoIssueAgentTests : BaseIntegrationTests
 	{
 		BaseSetUp();
 		_toDoModel = GetDefaultTestToDo();
+	}
+
+	[TestMethod]
+	public async Task FullProcessTest()
+	{
+		await ToDoIssueAgent.ProcessRepoToDoActionsAsync();
 	}
 }

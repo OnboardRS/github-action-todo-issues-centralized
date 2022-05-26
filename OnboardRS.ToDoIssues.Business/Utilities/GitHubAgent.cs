@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Octokit;
 using RestSharp;
 
@@ -182,7 +182,8 @@ public class GitHubAgent
 		{
 			var issue = await GetGitHubIssueAsync(issueNumber);
 
-			// TODO: Handle Labels
+			// TODO [15]: Handle Labels
+			// Because that's the whole point of this thing.
 
 			//foreach (var issueLabel in issue.Labels.Select(x => x.Name))
 			//{
