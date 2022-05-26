@@ -409,3 +409,5 @@ nuget.config
 NuGet.Config
 
 localQualityCheckResult.xml
+
+OnboardRS.ToDoIssues.GitHubAction/Properties/launchSettings.json

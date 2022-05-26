@@ -6,6 +6,8 @@ namespace OnboardRS.ToDoIssues.Business.Utilities.Extensions;
 
 public static class ModelActionExtension
 {
+	private static bool _isGitConfigured = false;
+
 	public static void ValidateIssueReference(this IToDo toDo, ILogger logger)
 	{
 		if (null == toDo.IssueReference)
@@ -75,6 +77,7 @@ public static class ModelActionExtension
 			}
 			else
 			{
+				await ConfigureGit(logger);
 				var changeFileNames = changedFiles.Select(x => x.FileName).ToList();
 				var gitAddCommand = $"git add {string.Join(" ", changeFileNames)}";
 				await gitAddCommand.RunBashCommandAsync(logger);
@@ -87,6 +90,19 @@ public static class ModelActionExtension
 		else
 		{
 			logger.LogInformation("No TODO file changes found.");
+		}
+	}
+
+	private static async Task ConfigureGit(ILogger logger)
+	{
+		if (!_isGitConfigured)
+		{
+			_isGitConfigured = true;
+			var gitConfigEmailCommand = $"git config --global user.email \"github-action-todo-issues-centralized@GitHub.com\"";
+			await gitConfigEmailCommand.RunBashCommandAsync(logger);
+
+			var gitConfigUserNameCommand = $"git config --global user.name \"{ToDoConstants.TO_DO_MARKER}-Bot\"";
+			await gitConfigUserNameCommand.RunBashCommandAsync(logger);
 		}
 	}
 

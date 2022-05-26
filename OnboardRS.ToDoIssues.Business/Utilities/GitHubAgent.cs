@@ -181,17 +181,13 @@ public class GitHubAgent
 		if (int.TryParse(toDoIssueModel.IssueNumber, out var issueNumber))
 		{
 			var issue = await GetGitHubIssueAsync(issueNumber);
-
-			// TODO: Handle Labels
-			// Because that's the whole point of this thing.
-
-			//foreach (var issueLabel in issue.Labels.Select(x => x.Name))
-			//{
-			//	if ()
-			//}
 			var issueUpdate = issue.ToUpdate();
 			issueUpdate.Title = toDoIssueModel.Title;
 			issueUpdate.Body = toDoIssueModel.Body;
+			foreach (var issueLabel in _config.IssueLabels)
+			{
+				issueUpdate.AddLabel(issueLabel);
+			}
 			var client = GetGitHubClient();
 			await client.Issue.Update(IssueRepoId, issueNumber, issueUpdate);
 			return issue;
@@ -205,9 +201,9 @@ public class GitHubAgent
 	public async Task<Issue> CreateGitHubIssueAsync(ToDoIssueModel toDoIssueModel)
 	{
 		var newIssue = new NewIssue(toDoIssueModel.Title)
-		               {
-			               Body = toDoIssueModel.Body
-		               };
+		{
+			Body = toDoIssueModel.Body
+		};
 		return await CreateGitHubIssueAsync(newIssue);
 	}
 
