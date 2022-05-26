@@ -106,7 +106,7 @@ public static class ModelActionExtension
 		var title = todo.Title ?? string.Empty;
 		var file = todo.ToDoFile.FileName;
 
-		// TODO [#4]: Also link to end line in addition to just the starting line.
+		// TODO: Also link to end line in addition to just the starting line.
 		// This requires changing `IFile` interface and `File` class to also keep track of where the {ToDoConstants.TASK_MARKER} comment ends.
 		var line = todo.StartLine;
 		var owner = config.CodeRepoInfoModel.Owner;

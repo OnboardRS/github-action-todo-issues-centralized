@@ -78,7 +78,7 @@ public class ToDoIssueAgent
 		var toDos = new List<IToDo>();
 		foreach (var toDoFile in toDoFiles)
 		{
-			// TODO [#6]: Implement ignoring paths
+			// TODO: Implement ignoring paths
 			if (_toDoIssuesConfig.ExcludeList.Any(x => x == toDoFile.FileName))
 			{
 				continue;
@@ -148,7 +148,7 @@ public class ToDoIssueAgent
 		var unassociated = toDo.IssueReference.StartsWith(ToDoConstants.STUB_REFERENCE_MARKER);
 		if (unassociated)
 		{
-			// TODO [#7]: Isolate error when creating tasks
+			// TODO: Isolate error when creating tasks
 			// Failure to create a task should not prevent the action from progressing forward.
 			// We can simply skip processing this comment for now.
 			// Since this script is designed to be idempotent, it can be retried later.
@@ -182,98 +182,4 @@ public class ToDoIssueAgent
 
 		return null;
 	}
-
-	//public async Task ReconcileToDos(List<IToDo> toDos)
-	//{
-	//	var uncompletedTasks = await _mongoAgent.FindAllUncompletedToDosAsync();
-	//	_logger.LogInformation($"Number of registered uncompleted tasks: {uncompletedTasks.Count}");
-
-	//	foreach (var toDo in toDos)
-	//	{
-	//		if (null == toDo.IssueReference)
-	//		{
-	//			var errorMessage = $"Unexpected unidentified {ToDoConstants.TASK_MARKER} marker.";
-	//			_logger.LogError(errorMessage);
-	//			throw new ArgumentException(errorMessage);
-	//		}
-
-	//		if (toDo.IssueReference.StartsWith(ToDoConstants.STUB_REFERENCE_MARKER))
-	//		{
-	//			var errorMessage = $"Expected all {ToDoConstants.TASK_MARKER} comments to be associated by now. Reference: {toDo.IssueReference}";
-	//			_logger.LogError(errorMessage);
-	//			throw new ArgumentException(errorMessage);
-	//		}
-
-	//		var entity = await _mongoAgent.FindToDoByIssueReferenceAsync(toDo.IssueReference);
-	//		if (null == entity)
-	//		{
-	//			_logger.LogWarning($"Cannot find a matching DB {ToDoConstants.TASK_MARKER} comment with reference: { toDo.IssueReference}");
-	//			continue;
-	//		}
-
-
-	//		// TODO [#8]: Isolate error when updating tasks
-	//		// Failure to update a task should not prevent the action from progressing forward.
-	//		// We can simply skip processing this task for now.
-	//		// Since this script is designed to be idempotent, it can be retried later.
-
-	//		var toDoHash = toDo.GetToDoHash();
-	//		if (entity.Hash != toDoHash)
-	//		{
-	//			_logger.LogInformation($"Hash for {toDo.IssueReference} changed: \"{entity.Hash}\"  => \"{toDoHash}\" -- must update task.");
-	//			var updatedIssue = toDo.GenerateToDoIssueModelFromTodo(_toDoIssuesConfig);
-	//			await _gitHubAgent.UupdateTask(toDo.IssueReference, updatedIssue);
-
-	//			await TaskManagementSystem.updateTask(reference, { title, body })
-	//      await task.updateState(state)
-
-
-	//	}
-	//		else
-	//		{
-	//			// TODO [#7]: Test to remove later B
-	//			_logger.LogInformation(
-	//			  "Hash for "{ }
-	//			" remains unchanged: "{ }
-	//			".",
-	//			  reference,
-	//			  task.state.hash,
-
-	//			)
-
-	//	}
-	//	}
-
-	//	for (const task of uncompletedTasks) {
-	//		if (todos.find(todo => todo.reference === task.taskReference))
-	//		{
-	//			continue
-
-	//	}
-
-
-	//		if (getShouldCloseIssueOnDelete())
-	//		{
-	//			_logger.LogInformation("{ToDoConstants.TASK_MARKER} for task "{ }
-	//			" is gone -- completing task!", task.taskReference,)
-	//	      // TODO [#5]: Isolate error when completing tasks
-	//		  // Failure to complete a task should not prevent the action from progressing forward.
-	//		  // We can simply skip processing this task for now.
-	//		  // Since this script is designed to be idempotent, it can be retried later.
-	//			await TaskManagementSystem.completeTask(task.taskReference)
-
-	//	}
-	//		else
-	//		{
-	//			// TODO [#8]: Test to remove later A
-	//			_logger.LogInformation("{ToDoConstants.TASK_MARKER} for task "{ }
-	//			" is gone TODO_ACTIONS_SHOULD_CLOSE_ISSUE_ON_DELETE is false, ignoring task.", task.taskReference,)
-
-	//	}
-
-	//		// This removes it from the code {ToDoConstants.TASK_MARKER} tracker we want to keep this regardless. Reduces calls for when you don"t want auto close.
-	//		await task.markAsCompleted()
-
-	//  }
-	//}
 }
