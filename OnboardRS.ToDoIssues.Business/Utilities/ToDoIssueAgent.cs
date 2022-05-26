@@ -78,7 +78,7 @@ public class ToDoIssueAgent
 		var toDos = new List<IToDo>();
 		foreach (var toDoFile in toDoFiles)
 		{
-			// TODO [$628ef0f06fc8240008059a47]: Implement ignoring paths
+			// TODO [#6]: Implement ignoring paths
 			if (_toDoIssuesConfig.ExcludeList.Any(x => x == toDoFile.FileName))
 			{
 				continue;
@@ -148,7 +148,7 @@ public class ToDoIssueAgent
 		var unassociated = toDo.IssueReference.StartsWith(ToDoConstants.STUB_REFERENCE_MARKER);
 		if (unassociated)
 		{
-			// TODO [$628ef0f06fc8240008059a48]: Isolate error when creating tasks
+			// TODO [#7]: Isolate error when creating tasks
 			// Failure to create a task should not prevent the action from progressing forward.
 			// We can simply skip processing this comment for now.
 			// Since this script is designed to be idempotent, it can be retried later.
@@ -212,7 +212,7 @@ public class ToDoIssueAgent
 	//		}
 
 
-	//		// TODO [$628ef0f06fc8240008059a49]: Isolate error when updating tasks
+	//		// TODO [#8]: Isolate error when updating tasks
 	//		// Failure to update a task should not prevent the action from progressing forward.
 	//		// We can simply skip processing this task for now.
 	//		// Since this script is designed to be idempotent, it can be retried later.
