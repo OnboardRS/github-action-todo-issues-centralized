@@ -1,6 +1,4 @@
-﻿using OnboardRS.ToDoIssues.Business.Models.Tasks;
-
-namespace OnboardRS.ToDoIssues.Tests;
+﻿namespace OnboardRS.ToDoIssues.Tests;
 
 [TestClass]
 public class GitHubAgentTests : BaseIntegrationTests

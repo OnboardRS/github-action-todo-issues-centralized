@@ -1,9 +1,8 @@
 ﻿using MongoDB.Bson;
 
-namespace OnboardRS.ToDoIssues.Business.Models.Mongo;
+namespace OnboardRS.ToDoIssues.Business.Models;
 
-
-public class ToDoEntity
+public class ToDoEntity : BaseReflectedToStringObject
 {
 	/// <summary>
 	/// Globally-unique ID for the issue.

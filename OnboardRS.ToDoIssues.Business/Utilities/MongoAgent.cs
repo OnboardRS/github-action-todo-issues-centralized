@@ -2,8 +2,6 @@
 using System.Diagnostics;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using OnboardRS.ToDoIssues.Business.Models.Mongo;
-using OnboardRS.ToDoIssues.Business.Models.Tasks;
 
 namespace OnboardRS.ToDoIssues.Business.Utilities;
 
@@ -98,19 +96,6 @@ public class MongoAgent
 		var collections = await MongoDatabase.ListCollectionsAsync(new ListCollectionsOptions { Filter = filter });
 		//check for existence
 		return await collections.AnyAsync();
-	}
-
-	public async Task<List<ToDoPersistanceModel>> GetExistingToDoComparisonModelsAsync()
-	{
-		var comparisonModels = new List<ToDoPersistanceModel>();
-		var items = await FindAllUncompletedToDosAsync();
-		foreach (var toDoEntity in items)
-		{
-			var comparisonModel = new ToDoPersistanceModel(toDoEntity);
-			comparisonModels.Add(comparisonModel);
-		}
-
-		return comparisonModels;
 	}
 
 	/// <summary>

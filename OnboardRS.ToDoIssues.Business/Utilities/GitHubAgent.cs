@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Octokit;
-using OnboardRS.ToDoIssues.Business.Models;
-using OnboardRS.ToDoIssues.Business.Models.Config;
-using OnboardRS.ToDoIssues.Business.Models.GeneratedCode.GitHub;
-using OnboardRS.ToDoIssues.Business.Models.Tasks;
 using RestSharp;
 
 namespace OnboardRS.ToDoIssues.Business.Utilities;
@@ -39,84 +30,6 @@ public class GitHubAgent
 		_logger = logger;
 		_config = config;
 	}
-
-	//public async Task<string> CreateTask(ToDoIssueModel model)
-	//{
-
-	//	//	const graphql = require('@octokit/graphql').defaults({
-	//	//headers:
-	//	//		{
-	//	//authorization: `token ${
-	//	//				process.env.GITHUB_TOKEN ||
-	//	//invariant(false, 'Required GITHUB_TOKEN variable.')}`,
-	//	//    },
-	//	//  })
-	//	//  const result = await graphql(
-	//	//    `
-	//	//      mutation CreateIssue($input: CreateIssueInput!) {
-	//	//		createIssue(input: $input) {
-	//	//			issue {
-	//	//				number
-
-
-	//	//		  }
-	//	//		}
-	//	//	}
-	//	//    `,
-	//	//    {
-	//	//input:
-	//	//		{
-	//	//repositoryId: RepositoryInfo.issueSourceRepoContext.repositoryNodeId,
-	//	//        title: information.title,
-	//	//        body: information.body,
-	//	//      },
-	//	//    },
-	//	//  )
-	//	//  log.debug('Create issue result:', result)
-	//	//  return result.createIssue.issue.number
-	//	//	? `#${result.createIssue.issue.number}`
-	//	//    : invariant(
-	//	//		false,
-	//	//		'Failed to get issue number out of createIssue API call.',
-
-	//	//	  )
-	//}
-
-	public async Task CompleteTask(string issueReference)
-	{
-		//	const Octokit = (await import('@octokit/rest')).default
-		//  const octokit = new Octokit({
-		//	auth: `token ${
-		//		process.env.GITHUB_TOKEN ||
-		//invariant(false, 'Required GITHUB_TOKEN variable.')}`,
-		//  })
-		//  const result = await octokit.issues.update({
-		//    owner: RepositoryInfo.issueSourceRepoContext.repositoryOwner,
-		//	repo: RepositoryInfo.issueSourceRepoContext.repositoryName,
-		//	issue_number: +taskReference.substr(1),
-		//	state: 'closed',
-		//  })
-		//  log.debug('Issue close result:', result.data)
-	}
-
-	public async Task updateTask(string issueReference, ToDoIssueModel toDoIssueModel)
-	{
-		//	const Octokit = (await import('@octokit/rest')).default
-		//  const octokit = new Octokit({
-		//	auth: `token ${
-		//		process.env.GITHUB_TOKEN ||
-		//invariant(false, 'Required GITHUB_TOKEN variable.')}`,
-		//  })
-		//  const result = await octokit.issues.update({
-		//    owner: RepositoryInfo.issueSourceRepoContext.repositoryOwner,
-		//	repo: RepositoryInfo.issueSourceRepoContext.repositoryName,
-		//	issue_number: +taskReference.substr(1),
-		//	title: information.title,
-		//	body: information.body,
-		//  })
-		//  log.debug('Issue update result:', result.data)
-	}
-
 
 	//async void Main()
 	//{

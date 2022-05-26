@@ -1,62 +1,75 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Octokit;
-using OnboardRS.ToDoIssues.Business.Models.Config;
-using ZenHub;
-using ZenHub.Models;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using Octokit;
+//using ZenHub;
+//using ZenHub.Models;
+//using OnboardRS.ToDoIssues.Business.Models.GeneratedCode.ZenHub;
 
-namespace OnboardRS.ToDoIssues.Business.Utilities;
 
-public class ZenHubAgent
-{
-	private readonly ZenHubConfig _config;
+//namespace OnboardRS.ToDoIssues.Business.Utilities;
 
-	public ZenHubAgent(ZenHubConfig config)
-	{
-		_config = config;
-	}
+//public class ZenHubConfig : BaseReflectedToStringObject
+//{
+//	public string AccessToken { get; set; }
+//	public List<ZenWorkspace> Workspaces { get; set; } = new List<ZenWorkspace>();
 
-	public Workspace[] GetZenHubWorkspace(Repository repo)
-	{
-		var client = new ZenHubClient(_config.AccessToken);
-		return client.GetRepositoryClient(repo).GetWorkspacesAsync().Result;
+//	public ZenHubConfig(string accessToken)
+//	{
+//		AccessToken = accessToken;
+//	}
+//}
 
-	}
 
-	public List<ReleaseReport> GetZenHubReleases(Repository repo)
-	{
-		var client = new ZenHubClient(_config.AccessToken);
-		return client.GetRepositoryClient(repo).GetReleaseReportsAsync().Result.Value.ToList();
-	}
+//public class ZenHubAgent
+//{
+//	private readonly ZenHubConfig _config;
 
-	public ReleaseReport GetZenHubReleaseReport(string releaseId)
-	{
-		var client = new ZenHubClient(_config.AccessToken);
-		return client.GetReleaseClient(releaseId).GetReportAsync().Result;
-	}
+//	public ZenHubAgent(ZenHubConfig config)
+//	{
+//		_config = config;
+//	}
 
-	public IssueDetails[] GetZenHubReleaseIssues(string releaseId)
-	{
-		var client = new ZenHubClient(_config.AccessToken);
-		return client.GetReleaseClient(releaseId).GetIssuesAsync().Result;
-	}
+//	public Workspace[] GetZenHubWorkspace(Repository repo)
+//	{
+//		var client = new ZenHubClient(_config.AccessToken);
+//		return client.GetRepositoryClient(repo).GetWorkspacesAsync().Result;
 
-	public EpicList GetZenHubRepoEpics(long repoId)
-	{
-		var client = new ZenHubClient(_config.AccessToken);
-		return client.GetRepositoryClient(repoId).GetEpicsAsync().Result.Value;
-	}
+//	}
 
-	public EpicDetails GetZenHubEpicDetails(long repoId, int issueNumber)
-	{
-		var client = new ZenHubClient(_config.AccessToken);
-		return client.GetEpicClient(repoId, issueNumber).GetDetailsAsync().Result;
-	}
+//	public List<ReleaseReport> GetZenHubReleases(Repository repo)
+//	{
+//		var client = new ZenHubClient(_config.AccessToken);
+//		return client.GetRepositoryClient(repo).GetReleaseReportsAsync().Result.Value.ToList();
+//	}
 
-	public IssueDetails GetZenHubIssueDetails(long repoId, int issueNumber)
-	{
-		var client = new ZenHubClient(_config.AccessToken);
-		return client.GetIssueClient(repoId, issueNumber).GetDetailsAsync().Result;
-	}
-}
+//	public ReleaseReport GetZenHubReleaseReport(string releaseId)
+//	{
+//		var client = new ZenHubClient(_config.AccessToken);
+//		return client.GetReleaseClient(releaseId).GetReportAsync().Result;
+//	}
+
+//	public IssueDetails[] GetZenHubReleaseIssues(string releaseId)
+//	{
+//		var client = new ZenHubClient(_config.AccessToken);
+//		return client.GetReleaseClient(releaseId).GetIssuesAsync().Result;
+//	}
+
+//	public EpicList GetZenHubRepoEpics(long repoId)
+//	{
+//		var client = new ZenHubClient(_config.AccessToken);
+//		return client.GetRepositoryClient(repoId).GetEpicsAsync().Result.Value;
+//	}
+
+//	public EpicDetails GetZenHubEpicDetails(long repoId, int issueNumber)
+//	{
+//		var client = new ZenHubClient(_config.AccessToken);
+//		return client.GetEpicClient(repoId, issueNumber).GetDetailsAsync().Result;
+//	}
+
+//	public IssueDetails GetZenHubIssueDetails(long repoId, int issueNumber)
+//	{
+//		var client = new ZenHubClient(_config.AccessToken);
+//		return client.GetIssueClient(repoId, issueNumber).GetDetailsAsync().Result;
+//	}
+//}

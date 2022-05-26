@@ -44,10 +44,10 @@ public class ToDoParsingTests
 ";
 
 	[TestMethod]
-	public async Task InheritedParserTestCase01ParsesToDos()
+	public void InheritedParserTestCase01ParsesToDos()
 	{
 		var file = new ToDoMockFile("main.js", InheritedParserTestCase01String);
-		var result = await file.ParseToDosAsync();
+		var result = file.ParseToDos();
 		Assert.AreEqual(6, result.Count, "Parse Length");
 		for (var index = 0; index < result.Count; index++)
 		{
@@ -74,10 +74,10 @@ public class ToDoParsingTests
 	// {ToDoConstants.TASK_MARKER} [https://github.com/dtinth/todo-actions/issues/1]: Item 4";
 
 	[TestMethod]
-	public async Task InheritedParserTestCase02DetectsReference()
+	public void InheritedParserTestCase02DetectsReference()
 	{
 		var file = new ToDoMockFile("main.js", InheritedParserTestCase02String);
-		var result = await file.ParseToDosAsync();
+		var result = file.ParseToDos();
 		Assert.AreEqual(4, result.Count, "Parse Length");
 		Assert.AreEqual("#1", result[0].IssueReference);
 		Assert.AreEqual("$wow", result[1].IssueReference);
@@ -91,10 +91,10 @@ public class ToDoParsingTests
         // Body";
 
 	[TestMethod]
-	public async Task InheritedParserTestCase03AllowsNextLineTitle()
+	public void InheritedParserTestCase03AllowsNextLineTitle()
 	{
 		var file = new ToDoMockFile("main.js", InheritedParserTestCase03String);
-		var result = await file.ParseToDosAsync();
+		var result = file.ParseToDos();
 		Assert.AreEqual(1, result.Count, "Parse Length");
 		Assert.AreEqual("Title", result[0].Title);
 		Assert.AreEqual("Body", result[0].Body);

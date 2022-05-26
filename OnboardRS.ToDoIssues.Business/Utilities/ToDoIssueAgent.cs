@@ -1,9 +1,4 @@
-﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using MongoDB.Bson;
-using OnboardRS.ToDoIssues.Business.Interfaces;
-using OnboardRS.ToDoIssues.Business.Models.Mongo;
-using OnboardRS.ToDoIssues.Business.Models.Tasks;
+﻿using MongoDB.Bson;
 
 namespace OnboardRS.ToDoIssues.Business.Utilities;
 
@@ -30,7 +25,7 @@ public class ToDoIssueAgent
 		var toDoFiles = await GetToDoFilesFromRepositoryAsync();
 
 		// Parse out the ToDos.
-		var toDos = await GetToDosFromToDoFilesAsync(toDoFiles);
+		var toDos = GetToDosFromToDoFiles(toDoFiles);
 
 		// Create stub references for items with no references.
 		await ProcessToDosWithoutReferenceAsync(toDos);
@@ -68,7 +63,7 @@ public class ToDoIssueAgent
 			foreach (var todo in todDsWithoutReference)
 			{
 				//Create a stub id to be replaced later, starts with $
-				todo.IssueReference = $"${ BsonUtils.ToHexString(new ObjectId().ToByteArray())}";
+				todo.IssueReference = $"${BsonUtils.ToHexString(new ObjectId().ToByteArray())}";
 			}
 
 			List<IToDoFile> todoFilesWithoutReference = todDsWithoutReference.Select(x => x.ToDoFile).Distinct().ToList();
@@ -76,7 +71,7 @@ public class ToDoIssueAgent
 		}
 		_logger.LogInformation($"Created stub reference for {todDsWithoutReference.Count} items.");
 	}
-	public async Task<List<IToDo>> GetToDosFromToDoFilesAsync(List<IToDoFile> toDoFiles)
+	public List<IToDo> GetToDosFromToDoFiles(List<IToDoFile> toDoFiles)
 	{
 		var toDos = new List<IToDo>();
 		foreach (var toDoFile in toDoFiles)
@@ -87,7 +82,7 @@ public class ToDoIssueAgent
 				continue;
 			}
 
-			List<IToDo> todos = await toDoFile.ParseToDosAsync();
+			List<IToDo> todos = toDoFile.ParseToDos();
 			_logger.LogInformation($"{toDoFile.FileName}: {todos.Count} found.");
 			toDos.AddRange(todos);
 		}

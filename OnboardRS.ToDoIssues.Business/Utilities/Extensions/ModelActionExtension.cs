@@ -1,12 +1,6 @@
-﻿using System.Security;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using OnboardRS.ToDoIssues.Business.Interfaces;
-using OnboardRS.ToDoIssues.Business.Models.Mongo;
-using OnboardRS.ToDoIssues.Business.Models.Tasks;
+
 
 namespace OnboardRS.ToDoIssues.Business.Utilities.Extensions;
 
@@ -77,7 +71,7 @@ public static class ModelActionExtension
 
 			var gitAddCommand = $"git add {string.Join(" ", changedFiles)}";
 			await gitAddCommand.RunBashCommandAsync(logger);
-			var gitCommitCommand = $"git commit -m \"{ commitMessage}\"";
+			var gitCommitCommand = $"git commit -m \"{commitMessage}\"";
 			await gitCommitCommand.RunBashCommandAsync(logger);
 			var gitPushCommand = $"git push \"https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git\" HEAD:\"$GITHUB_REF\"";
 			await gitPushCommand.RunBashCommandAsync(logger);
@@ -87,18 +81,6 @@ public static class ModelActionExtension
 			logger.LogInformation("No TODO file changes found.");
 		}
 	}
-
-	//public static async Task<string> MarkAsCompletedAsync(this ToDoTask toDoTask)
-	//{
-	//	return null;
-	//}
-
-	//public static async Task UpdateStateAsync(this ToDoTask toDoTask, IToDoTaskState newState)
-	//{
-
-	//}
-
-
 
 	public static string GetToDoHash(this IToDo todo)
 	{
@@ -133,7 +115,7 @@ public static class ModelActionExtension
 		var defaultBranch = config.CodeRepoInfoModel.Branch;
 
 		var url = $"https://github.com/{owner}/{repo}/blob/{defaultBranch}/{file}#L{line}";
-		var link = $"[{ file}:{ line}]({ url})";
+		var link = $"[{file}:{line}]({url})";
 		var builder = new StringBuilder();
 		builder.AppendLine(todo.Body);
 		builder.AppendLine();
@@ -144,50 +126,5 @@ public static class ModelActionExtension
 		var hash = fullBody.HashString();
 		var model = new ToDoIssueModel(hash, title, fullBody);
 		return model;
-	}
-}
-
-public static class ToDoParserExtensions
-{
-	public const string TODO_REGULAR_EXPRESSION = @"^(\W+\s)TODO(?: \[([^\]\s]+)\])?:(.*)";
-	private static readonly Regex Regex = new Regex(TODO_REGULAR_EXPRESSION, RegexOptions.Multiline);
-	public static Match? ParseLineForToDo(this string input)
-	{
-		var match = Regex.Matches(input).FirstOrDefault();
-		return match;
-	}
-
-	public static async Task<List<IToDo>> ParseToDosAsync(this IToDoFile file)
-	{
-		var todos = new List<IToDo>();
-
-		ToDoModel? currentTodo = null;
-		for (int lineIndex = 0; lineIndex < file.Contents.Lines.Count; lineIndex++)
-		{
-			var line = file.Contents.Lines[lineIndex];
-			var match = line.ParseLineForToDo();
-			if (null != match)
-			{
-				var todo = new ToDoModel(file, lineIndex, match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value);
-				currentTodo = todo;
-				todos.Add(todo);
-			}
-			else if (null != currentTodo)
-			{
-				var beforePrefix = line.Substring(0, Math.Min(currentTodo.Prefix.Length, line.Length));
-				var afterPrefix = line.Substring(Math.Min(currentTodo.Prefix.Length, line.Length));
-				var hasSamePrefix = beforePrefix.TrimEnd() == currentTodo.Prefix.TrimEnd();
-				var shouldAppendText = !string.IsNullOrWhiteSpace(afterPrefix) || !string.IsNullOrWhiteSpace(beforePrefix);
-				if (hasSamePrefix && shouldAppendText)
-				{
-					currentTodo.HandleLine(afterPrefix);
-				}
-				else
-				{
-					currentTodo = null;
-				}
-			}
-		}
-		return todos;
 	}
 }

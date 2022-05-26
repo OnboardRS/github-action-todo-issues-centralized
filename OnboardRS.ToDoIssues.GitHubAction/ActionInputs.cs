@@ -1,6 +1,4 @@
-﻿using CommandLine;
-using OnboardRS.ToDoIssues.Business.Models;
-using OnboardRS.ToDoIssues.Business.Models.Config;
+﻿using OnboardRS.ToDoIssues.Business.Models;
 
 namespace OnboardRS.ToDoIssues.GitHubAction;
 

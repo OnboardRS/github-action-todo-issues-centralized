@@ -1,15 +1,7 @@
 ﻿using OnboardRS.ToDoIssues.Business.Interfaces;
-using OnboardRS.ToDoIssues.Business.Models.Config;
 using OnboardRS.ToDoIssues.Business.Utilities;
 
 namespace OnboardRS.ToDoIssues.GitHubAction.Extensions;
-
-public static class ExitCodes
-{
-	public const int ACTION_PARSE_ERROR = 1;
-	public const int ACTION_CONFIG_ERROR = 2;
-	public const int ACTION_PARSE_EXCEPTION = 3;
-}
 
 public static class ServiceCollectionExtensions
 {
