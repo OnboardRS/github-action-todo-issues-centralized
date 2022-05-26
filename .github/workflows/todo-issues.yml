@@ -1,26 +1,17 @@
-name: TODO Centralized
+name: todo-issues
+
 on:
   push:
 
-jobs:
-  todo-issues:
-    name: Handle TODO ZenHub Issues Integration
-    runs-on: ubuntu-latest
-    env:
-      solutionName: ./todo-issues-centralized.sln
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
 
-      - name: TODO Issues Centralized
-        uses: OnboardRS/github-action-todo-issues-centralized@develop
-        with:
-          code-repo-owner: ${{ github.repository_owner }}
-          code-repo-name: ${{ github.repository }}
-          code-repo-branch: ${{ github.ref }}
-          code-repo-node-id: ${{ github.repository.node_id }}
-          issue-repo-owner: 'oh-hai-owner'
-          issue-repo-name: 'oh-hai-name'
-          issue-repo-branch: 'oh-hai-branch'
-          issue-repo-node-id: 'oh-hai-node-id'
-          issue-label: 'github-actions'
+jobs:
+  todos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: todo-actions
+        uses: dtinth/todo-actions@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TODO_ACTIONS_MONGO_URL: ${{ secrets.TODO_ACTIONS_MONGO_URL }}
+      
