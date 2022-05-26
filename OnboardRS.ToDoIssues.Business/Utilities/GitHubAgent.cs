@@ -95,7 +95,7 @@ public class GitHubAgent
 		{
 			Body = toDoIssueModel.Body
 		};
-		// TODO [#$000000000000000000000000]: Test new todo label.
+		// TODO [#31]: Test new todo label.
 		foreach (var issueLabel in _config.IssueLabels)
 		{
 			newIssue.Labels.Add(issueLabel);
