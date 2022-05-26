@@ -4,10 +4,10 @@ namespace OnboardRS.ToDoIssues.Business.Utilities;
 
 public class ToDoIssueAgent
 {
-	private readonly ILogger<ToDoIssueAgent> _logger;
-	private readonly ToDoIssuesConfig _toDoIssuesConfig;
-	private readonly MongoAgent _mongoAgent;
 	private readonly GitHubAgent _gitHubAgent;
+	private readonly ILogger<ToDoIssueAgent> _logger;
+	private readonly MongoAgent _mongoAgent;
+	private readonly ToDoIssuesConfig _toDoIssuesConfig;
 
 
 	public ToDoIssueAgent(ToDoIssuesConfig toDoIssuesConfig, ILogger<ToDoIssueAgent> logger, MongoAgent mongoAgent, GitHubAgent gitHubAgent)
@@ -50,7 +50,7 @@ public class ToDoIssueAgent
 	}
 
 	/// <summary>
-	/// Creates code and mongo db stubs for items without a refernce.
+	///     Creates code and mongo db stubs for items without a refernce.
 	/// </summary>
 	/// <param name="toDos"></param>
 	public async Task ProcessToDosWithoutReferenceAsync(List<IToDo> toDos)
@@ -66,11 +66,13 @@ public class ToDoIssueAgent
 				todo.IssueReference = $"${BsonUtils.ToHexString(new ObjectId().ToByteArray())}";
 			}
 
-			List<IToDoFile> todoFilesWithoutReference = todDsWithoutReference.Select(x => x.ToDoFile).Distinct().ToList();
+			var todoFilesWithoutReference = todDsWithoutReference.Select(x => x.ToDoFile).Distinct().ToList();
 			await todoFilesWithoutReference.SaveChanges($"Collecting {todDsWithoutReference.Count} new {ToDoConstants.TASK_MARKER} comments.", _logger);
 		}
+
 		_logger.LogInformation($"Created stub reference for {todDsWithoutReference.Count} items.");
 	}
+
 	public List<IToDo> GetToDosFromToDoFiles(List<IToDoFile> toDoFiles)
 	{
 		var toDos = new List<IToDo>();
@@ -82,7 +84,7 @@ public class ToDoIssueAgent
 				continue;
 			}
 
-			List<IToDo> todos = toDoFile.ParseToDos();
+			var todos = toDoFile.ParseToDos();
 			_logger.LogInformation($"{toDoFile.FileName}: {todos.Count} found.");
 			toDos.AddRange(todos);
 		}
@@ -127,10 +129,11 @@ public class ToDoIssueAgent
 	}
 
 	/// <summary>
-	/// If the item is a stub, create or find the DB entry, and create an issue. If the item is already associated, do nothing.
+	///     If the item is a stub, create or find the DB entry, and create an issue. If the item is already associated, do
+	///     nothing.
 	/// </summary>
 	/// <param name="toDo"></param>
-	/// <returns>The <see cref="IToDoFile"/> if the item was unassociated, or null if nothing changed.  </returns>
+	/// <returns>The <see cref="IToDoFile" /> if the item was unassociated, or null if nothing changed.  </returns>
 	/// <exception cref="ArgumentException"></exception>
 	/// <exception cref="ApplicationException"></exception>
 	public async Task<IToDo?> EnsureToDoIsAssociatedAsync(IToDo toDo)

@@ -1,7 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-
 namespace OnboardRS.ToDoIssues.Business.Utilities.Extensions;
 
 public static class ModelActionExtension
@@ -17,17 +16,15 @@ public static class ModelActionExtension
 	}
 
 	/// <summary>
-	/// Saves the file back into the file system.
+	///     Saves the file back into the file system.
 	/// </summary>
 	/// <returns></returns>
-
 	public static async Task SaveToDoFileAsync(this IToDoFile toDoFile)
 	{
 		if (toDoFile.Contents.Changed)
 		{
 			await File.WriteAllTextAsync(toDoFile.FileName, toDoFile.Contents.ToString());
 			toDoFile.Contents.Changed = false;
-
 		}
 	}
 
@@ -37,6 +34,7 @@ public static class ModelActionExtension
 		{
 			return;
 		}
+
 		var updatedReferences = toDos.Select(x => x.IssueReference).OrderBy(x => x).ToList();
 		var toDoFiles = toDos.Select(x => x.ToDoFile).ToList();
 		var toDoFilesSet = new HashSet<IToDoFile>();
@@ -45,13 +43,14 @@ public static class ModelActionExtension
 		{
 			toDoFilesSet.Add(toDoFile);
 		}
+
 		var toDoFilesToUpdate = toDoFilesSet.ToList();
 		var commitMessage = $"Updated {ToDoConstants.TASK_MARKER} references: " + string.Join(", ", updatedReferences);
 		await toDoFilesToUpdate.ToList().SaveChanges(commitMessage, logger);
 	}
 
 	/// <summary>
-	/// Saves all ToDo files and updates git.
+	///     Saves all ToDo files and updates git.
 	/// </summary>
 	/// <param name="toDoFiles"></param>
 	/// <param name="commitMessage"></param>
@@ -73,7 +72,7 @@ public static class ModelActionExtension
 			await gitAddCommand.RunBashCommandAsync(logger);
 			var gitCommitCommand = $"git commit -m \"{commitMessage}\"";
 			await gitCommitCommand.RunBashCommandAsync(logger);
-			var gitPushCommand = $"git push \"https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git\" HEAD:\"$GITHUB_REF\"";
+			var gitPushCommand = "git push \"https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git\" HEAD:\"$GITHUB_REF\"";
 			await gitPushCommand.RunBashCommandAsync(logger);
 		}
 		else
@@ -93,17 +92,17 @@ public static class ModelActionExtension
 	{
 		var crypt = SHA256.Create();
 		var hash = new StringBuilder();
-		byte[] crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(randomString));
-		foreach (byte theByte in crypto)
+		var crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(randomString));
+		foreach (var theByte in crypto)
 		{
 			hash.Append(theByte.ToString("x2"));
 		}
+
 		return hash.ToString();
 	}
 
 	public static ToDoIssueModel GenerateToDoIssueModelFromTodo(this IToDo todo, ToDoIssuesConfig config)
 	{
-
 		var title = todo.Title ?? string.Empty;
 		var file = todo.ToDoFile.FileName;
 

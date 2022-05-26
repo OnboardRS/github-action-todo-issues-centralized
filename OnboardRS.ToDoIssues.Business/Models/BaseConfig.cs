@@ -69,6 +69,7 @@ public abstract class BaseConfig : BaseReflectedToStringObject
 		{
 			backingField = GetEnvironmentVariable(variableName);
 		}
+
 		return backingField;
 	}
 
@@ -78,6 +79,7 @@ public abstract class BaseConfig : BaseReflectedToStringObject
 		{
 			backingField = GetExpectedEnvironmentVariable(variableName);
 		}
+
 		return backingField;
 	}
 

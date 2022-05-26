@@ -5,7 +5,8 @@ namespace OnboardRS.ToDoIssues.Business.Utilities.Extensions;
 public static class ToDoParserExtensions
 {
 	public const string TODO_REGULAR_EXPRESSION = @"^(\W+\s)TODO(?: \[([^\]\s]+)\])?:(.*)";
-	private static readonly Regex Regex = new Regex(TODO_REGULAR_EXPRESSION, RegexOptions.Multiline);
+	private static readonly Regex Regex = new(TODO_REGULAR_EXPRESSION, RegexOptions.Multiline);
+
 	public static Match? ParseLineForToDo(this string input)
 	{
 		var match = Regex.Matches(input).FirstOrDefault();
@@ -17,7 +18,7 @@ public static class ToDoParserExtensions
 		var toDos = new List<IToDo>();
 
 		ToDoModel? currentTodo = null;
-		for (int lineIndex = 0; lineIndex < file.Contents.Lines.Count; lineIndex++)
+		for (var lineIndex = 0; lineIndex < file.Contents.Lines.Count; lineIndex++)
 		{
 			var line = file.Contents.Lines[lineIndex];
 			var match = line.ParseLineForToDo();
@@ -43,6 +44,7 @@ public static class ToDoParserExtensions
 				}
 			}
 		}
+
 		return toDos;
 	}
 }

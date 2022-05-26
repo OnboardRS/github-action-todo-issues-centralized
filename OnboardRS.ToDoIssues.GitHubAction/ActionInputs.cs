@@ -4,22 +4,22 @@ namespace OnboardRS.ToDoIssues.GitHubAction;
 
 public class ActionInputs : BaseReflectedToStringObject
 {
-	string _codeRepoRepositoryName = null!;
-	string _codeRepoBranchName = null!;
-	string _codeRepoOwner = null!;
-	string _codeRepoNodeId = null!;
-	string _issueRepoRepositoryName = null!;
-	string _issueRepoBranchName = null!;
-	string _issueRepoOwner = null!;
-	string _issueRepoNodeId = null!;
-	string _issueLabel = null!;
-	string _gitHubActionToken = null!;
-	string _mongoDbUrl = null!;
+	private string _codeRepoBranchName = null!;
+	private string _codeRepoNodeId = null!;
+	private string _codeRepoOwner = null!;
+	private string _codeRepoRepositoryName = null!;
+	private string _gitHubActionToken = null!;
+	private string _issueLabel = null!;
+	private string _issueRepoBranchName = null!;
+	private string _issueRepoNodeId = null!;
+	private string _issueRepoOwner = null!;
+	private string _issueRepoRepositoryName = null!;
+	private string _mongoDbUrl = null!;
 
 
 	[Option("code-repo-owner",
-			   Required = true,
-			   HelpText = "The code repo owner, for example: \"OnboardRS\". Assign from `github.repository_owner`.")]
+		       Required = true,
+		       HelpText = "The code repo owner, for example: \"OnboardRS\". Assign from `github.repository_owner`.")]
 	public string CodeRepoOwner
 	{
 		get => _codeRepoOwner;
@@ -27,8 +27,8 @@ public class ActionInputs : BaseReflectedToStringObject
 	}
 
 	[Option("code-repo-name",
-			   Required = true,
-			   HelpText = "The code repo repository name, for example: \"github-action-todo-issues-centralized\". Assign from `github.repository`.")]
+		       Required = true,
+		       HelpText = "The code repo repository name, for example: \"github-action-todo-issues-centralized\". Assign from `github.repository`.")]
 	public string CodeRepoName
 	{
 		get => _codeRepoRepositoryName;
@@ -36,8 +36,8 @@ public class ActionInputs : BaseReflectedToStringObject
 	}
 
 	[Option("code-repo-branch",
-			   Required = true,
-			   HelpText = "The code repo branch name, for example: \"refs/heads/develop\". Assign from `github.ref`.")]
+		       Required = true,
+		       HelpText = "The code repo branch name, for example: \"refs/heads/develop\". Assign from `github.ref`.")]
 	public string CodeRepoBranch
 	{
 		get => _codeRepoBranchName;
@@ -45,8 +45,8 @@ public class ActionInputs : BaseReflectedToStringObject
 	}
 
 	[Option("code-repo-node-id",
-			   Required = true,
-			   HelpText = "The code repo node id, for example: \"R_kgDOHlz\". Assign from `github.repository.node_id`.")]
+		       Required = true,
+		       HelpText = "The code repo node id, for example: \"R_kgDOHlz\". Assign from `github.repository.node_id`.")]
 	public string CodeRepoNodeId
 	{
 		get => _codeRepoNodeId;
@@ -54,8 +54,8 @@ public class ActionInputs : BaseReflectedToStringObject
 	}
 
 	[Option("issue-repo-owner",
-			   Required = true,
-			   HelpText = "The issue repo owner, for example: \"OnboardRS\". Assign from centralized issue repo.")]
+		       Required = true,
+		       HelpText = "The issue repo owner, for example: \"OnboardRS\". Assign from centralized issue repo.")]
 	public string IssueRepoOwner
 	{
 		get => _issueRepoOwner;
@@ -63,8 +63,8 @@ public class ActionInputs : BaseReflectedToStringObject
 	}
 
 	[Option("issue-repo-name",
-			   Required = true,
-			   HelpText = "The issue repo repository name, for example: \"zenhub-dev\". Assign from centralized issue repo.")]
+		       Required = true,
+		       HelpText = "The issue repo repository name, for example: \"zenhub-dev\". Assign from centralized issue repo.")]
 	public string IssueRepoName
 	{
 		get => _issueRepoRepositoryName;
@@ -72,8 +72,8 @@ public class ActionInputs : BaseReflectedToStringObject
 	}
 
 	[Option("issue-repo-branch",
-			   Required = true,
-			   HelpText = "The issue repo branch name, for example: \"refs/heads/develop\". Assign from centralized issue repo.")]
+		       Required = true,
+		       HelpText = "The issue repo branch name, for example: \"refs/heads/develop\". Assign from centralized issue repo.")]
 	public string IssueRepoBranch
 	{
 		get => _issueRepoBranchName;
@@ -81,8 +81,8 @@ public class ActionInputs : BaseReflectedToStringObject
 	}
 
 	[Option("issue-repo-node-id",
-			   Required = true,
-			   HelpText = "The issue repo node id, for example: \"R_kgDOHlz\". Assign from centralized issue repo.")]
+		       Required = true,
+		       HelpText = "The issue repo node id, for example: \"R_kgDOHlz\". Assign from centralized issue repo.")]
 	public string IssueRepoNodeId
 	{
 		get => _issueRepoNodeId;
@@ -90,8 +90,8 @@ public class ActionInputs : BaseReflectedToStringObject
 	}
 
 	[Option("issue-label",
-			   Required = true,
-			   HelpText = "The issue label TODO GitHub issues should be created with, for example: \"github-actions\". Assign per usage.")]
+		       Required = true,
+		       HelpText = "The issue label TODO GitHub issues should be created with, for example: \"github-actions\". Assign per usage.")]
 	public string IssueLabel
 	{
 		get => _issueLabel;
@@ -99,8 +99,8 @@ public class ActionInputs : BaseReflectedToStringObject
 	}
 
 	[Option("github-action-token",
-			   Required = true,
-			   HelpText = "The GitHub token with permission to read and change the code.. Assign per usage.")]
+		       Required = true,
+		       HelpText = "The GitHub token with permission to read and change the code.. Assign per usage.")]
 	public string GitHubActionToken
 	{
 		get => _gitHubActionToken;
@@ -108,8 +108,8 @@ public class ActionInputs : BaseReflectedToStringObject
 	}
 
 	[Option("mongo-db-url",
-			   Required = true,
-			   HelpText = "The Mongo DB Url to use to store TODO hashes. Assign per usage.")]
+		       Required = true,
+		       HelpText = "The Mongo DB Url to use to store TODO hashes. Assign per usage.")]
 	public string MongoDbUrl
 	{
 		get => _mongoDbUrl;
@@ -118,16 +118,16 @@ public class ActionInputs : BaseReflectedToStringObject
 
 	public ToDoIssuesConfig ToToDoIssuesConfig()
 	{
-		RepoInfoModel codeRepo = new RepoInfoModel(CodeRepoName, CodeRepoOwner, CodeRepoBranch);
-		RepoInfoModel issueRepo = new RepoInfoModel(IssueRepoName, IssueRepoOwner, IssueRepoBranch);
+		var codeRepo = new RepoInfoModel(CodeRepoName, CodeRepoOwner, CodeRepoBranch);
+		var issueRepo = new RepoInfoModel(IssueRepoName, IssueRepoOwner, IssueRepoBranch);
 
 		var config = new ToDoIssuesConfig(GitHubActionToken, MongoDbUrl, IssueLabel, codeRepo, issueRepo);
 		return config;
 	}
 
-	static void ParseAndAssign(string? value, Action<string> assign)
+	private static void ParseAndAssign(string? value, Action<string> assign)
 	{
-		if (value is { Length: > 0 })
+		if (value is {Length: > 0})
 		{
 			assign(value.Split("/")[^1]);
 		}

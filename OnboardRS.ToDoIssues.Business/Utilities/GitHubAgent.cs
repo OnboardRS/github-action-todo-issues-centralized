@@ -6,10 +6,16 @@ namespace OnboardRS.ToDoIssues.Business.Utilities;
 
 public class GitHubAgent
 {
+	private readonly ToDoIssuesConfig _config;
 
 	private readonly ILogger<GitHubAgent> _logger;
-	private readonly ToDoIssuesConfig _config;
 	private long? _issueRepoId;
+
+	public GitHubAgent(ILogger<GitHubAgent> logger, ToDoIssuesConfig config)
+	{
+		_logger = logger;
+		_config = config;
+	}
 
 	private long IssueRepoId
 	{
@@ -23,12 +29,6 @@ public class GitHubAgent
 
 			return _issueRepoId.Value;
 		}
-	}
-
-	public GitHubAgent(ILogger<GitHubAgent> logger, ToDoIssuesConfig config)
-	{
-		_logger = logger;
-		_config = config;
 	}
 
 	//async void Main()
@@ -48,8 +48,6 @@ public class GitHubAgent
 
 
 	//	AppConfig = JsonConvert.DeserializeObject<EnvConfig>(configContent);
-
-
 
 
 	//	var client = new RestClient("https://api.github.com/");
@@ -102,7 +100,6 @@ public class GitHubAgent
 
 	//		request = new RestRequest($"/repos/{ghOrg}/{r.name}/labels");
 	//		var labels = JsonConvert.DeserializeObject<List<GHLabel>>(client.ExecuteAsync(request).Result.Content);
-
 
 
 	//		// Delete Repo Labels
@@ -163,6 +160,7 @@ public class GitHubAgent
 			_logger.LogError(message);
 			throw new ApplicationException(message);
 		}
+
 		return labels;
 	}
 
@@ -180,7 +178,7 @@ public class GitHubAgent
 
 	public async Task<Issue> UpdateGitHubIssueAsync(ToDoIssueModel toDoIssueModel)
 	{
-		if (int.TryParse(toDoIssueModel.IssueNumber, out int issueNumber))
+		if (int.TryParse(toDoIssueModel.IssueNumber, out var issueNumber))
 		{
 			var issue = await GetGitHubIssueAsync(issueNumber);
 
@@ -196,8 +194,8 @@ public class GitHubAgent
 			var client = GetGitHubClient();
 			await client.Issue.Update(IssueRepoId, issueNumber, issueUpdate);
 			return issue;
-
 		}
+
 		var message = $"Invalid {nameof(toDoIssueModel.IssueNumber)} for use in {nameof(UpdateGitHubIssueAsync)}. Could not parse to int. Got {toDoIssueModel.IssueNumber}";
 		_logger.LogError(message);
 		throw new ApplicationException(message);
@@ -206,9 +204,9 @@ public class GitHubAgent
 	public async Task<Issue> CreateGitHubIssueAsync(ToDoIssueModel toDoIssueModel)
 	{
 		var newIssue = new NewIssue(toDoIssueModel.Title)
-		{
-			Body = toDoIssueModel.Body
-		};
+		               {
+			               Body = toDoIssueModel.Body
+		               };
 		return await CreateGitHubIssueAsync(newIssue);
 	}
 
@@ -222,7 +220,7 @@ public class GitHubAgent
 	{
 		if (string.IsNullOrWhiteSpace(_config.GitHubAccessToken))
 		{
-			string noTokenMessage = $"No value for {nameof(_config.GitHubAccessToken)}. Check configuration input parameters and / or environment variables.";
+			var noTokenMessage = $"No value for {nameof(_config.GitHubAccessToken)}. Check configuration input parameters and / or environment variables.";
 			_logger.LogError(noTokenMessage);
 			throw new ApplicationException(noTokenMessage);
 		}
@@ -240,5 +238,4 @@ public class GitHubAgent
 		client.AddDefaultHeader("Accept", "application/vnd.github.v3+json");
 		return client;
 	}
-
 }

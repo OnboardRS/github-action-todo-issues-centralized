@@ -11,14 +11,14 @@ public static class ServiceCollectionExtensions
 		ActionInputs? actionInputs = null;
 		try
 		{
-
 			var parser = Default.ParseArguments(() => new ActionInputs(), args);
 			parser.WithNotParsed(
-								 errors =>
-								 {
-									 logger.LogError(string.Join(IToDoFileContents.UNIX_LINE_ENDING, errors.Select(error => error.ToString()))); ;
-									 Environment.Exit(ExitCodes.ACTION_PARSE_ERROR);
-								 });
+			                     errors =>
+			                     {
+				                     logger.LogError(string.Join(IToDoFileContents.UNIX_LINE_ENDING, errors.Select(error => error.ToString())));
+				                     ;
+				                     Environment.Exit(ExitCodes.ACTION_PARSE_ERROR);
+			                     });
 
 			actionInputs = parser.Value;
 		}
@@ -45,11 +45,11 @@ public static class ServiceCollectionExtensions
 		services.AddTransient<MongoAgent>();
 		services.AddTransient<ToDoIssueAgent>();
 		services.AddLogging(options =>
-		{
-			options.AddConsole()
-			.AddDebug()
-			.SetMinimumLevel(LogLevel.Trace);
-		});
+		                    {
+			                    options.AddConsole()
+				                    .AddDebug()
+				                    .SetMinimumLevel(LogLevel.Trace);
+		                    });
 		return services;
 	}
 }
