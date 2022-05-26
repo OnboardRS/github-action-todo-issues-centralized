@@ -173,7 +173,7 @@ public class ToDoIssueAgent
 		var unassociated = toDo.IssueReference.StartsWith(ToDoConstants.STUB_REFERENCE_MARKER);
 		if (unassociated)
 		{
-			// TODO [16]: Isolate error when creating ToDos
+			// TODO: Isolate error when creating ToDos
 			// Failure to create a ToDos should not prevent the action from progressing forward.
 			// We can simply skip processing this comment for now.
 			// Since this script is designed to be idempotent, it can be retried later.
@@ -244,7 +244,7 @@ public class ToDoIssueAgent
 		}
 
 
-		// TODO [17]: Isolate error when updating ToDos
+		// TODO: Isolate error when updating ToDos
 		// Failure to update a item should not prevent the action from progressing forward.
 		// We can simply skip processing this item for now.
 		// Since this script is designed to be idempotent, it can be retried later.

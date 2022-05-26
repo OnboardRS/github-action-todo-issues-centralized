@@ -182,7 +182,7 @@ public class GitHubAgent
 		{
 			var issue = await GetGitHubIssueAsync(issueNumber);
 
-			// TODO [15]: Handle Labels
+			// TODO: Handle Labels
 			// Because that's the whole point of this thing.
 
 			//foreach (var issueLabel in issue.Labels.Select(x => x.Name))
