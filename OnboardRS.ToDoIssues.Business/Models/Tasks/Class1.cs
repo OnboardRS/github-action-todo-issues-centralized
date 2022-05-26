@@ -38,16 +38,17 @@ public class ToDoPersistanceModel
 
 public class ToDoIssueModel
 {
-	public ToDoIssueModel(string hash, string title, string body)
+	public ToDoIssueModel(string issueNumber, string title, string body)
 	{
-		IssueHash = hash;
+
+		IssueNumber = issueNumber;
 		Title = title;
 		Body = body;
 	}
 
 	public string Title { get; set; }
 	public string Body { get; set; }
-	public string IssueHash { get; set; }
+	public string IssueNumber{ get; set; }
 
 
 }

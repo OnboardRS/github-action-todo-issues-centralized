@@ -12,6 +12,15 @@ namespace OnboardRS.ToDoIssues.Business.Utilities.Extensions;
 
 public static class ModelActionExtension
 {
+	public static void ValidateIssueReference(this IToDo toDo, ILogger logger)
+	{
+		if (null == toDo.IssueReference)
+		{
+			var errorMessage = $"Unexpected unidentified {ToDoConstants.TASK_MARKER} marker.";
+			logger.LogError(errorMessage);
+			throw new ArgumentException(errorMessage);
+		}
+	}
 
 	/// <summary>
 	/// Saves the file back into the file system.
@@ -26,6 +35,25 @@ public static class ModelActionExtension
 			toDoFile.Contents.Changed = false;
 
 		}
+	}
+
+	public static async Task SaveNewAssociationChanges(this List<IToDo> toDos, ILogger logger)
+	{
+		if (!toDos.Any())
+		{
+			return;
+		}
+		var updatedReferences = toDos.Select(x => x.IssueReference).OrderBy(x => x).ToList();
+		var toDoFiles = toDos.Select(x => x.ToDoFile).ToList();
+		var toDoFilesSet = new HashSet<IToDoFile>();
+
+		foreach (var toDoFile in toDoFiles)
+		{
+			toDoFilesSet.Add(toDoFile);
+		}
+		var toDoFilesToUpdate = toDoFilesSet.ToList();
+		var commitMessage = $"Updated {ToDoConstants.TASK_MARKER} references: " + string.Join(", ", updatedReferences);
+		await toDoFilesToUpdate.ToList().SaveChanges(commitMessage, logger);
 	}
 
 	/// <summary>
@@ -70,20 +98,7 @@ public static class ModelActionExtension
 
 	//}
 
-	public static ToDoEntity ToTodDoEntity(this IToDo todo, string todoUniqueKey, string repositoryId)
-	{
-		var objectId = new ObjectId(todoUniqueKey);
-		var model = new ToDoEntity(objectId, repositoryId)
-		{
-			Completed = null,
-			CreatedAt = DateTime.UtcNow,
-			Hash = todo.GetToDoHash(),
-			OwnerProcessId = null,
-			OwnerProcessTimestamp = null,
-			IssueReference = todo.IssueReference
-		};
-		return model;
-	}
+
 
 	public static string GetToDoHash(this IToDo todo)
 	{

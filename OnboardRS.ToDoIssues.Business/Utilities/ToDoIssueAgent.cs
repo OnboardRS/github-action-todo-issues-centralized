@@ -14,20 +14,6 @@ public class ToDoIssueAgent
 	private readonly MongoAgent _mongoAgent;
 	private readonly GitHubAgent _gitHubAgent;
 
-	private string? _processId;
-
-	public string ProcessId
-	{
-		get
-		{
-			if (null == _processId)
-			{
-				_processId = Process.GetCurrentProcess().Id.ToString();
-			}
-
-			return _processId;
-		}
-	}
 
 	public ToDoIssueAgent(ToDoIssuesConfig toDoIssuesConfig, ILogger<ToDoIssueAgent> logger, MongoAgent mongoAgent, GitHubAgent gitHubAgent)
 	{
@@ -47,12 +33,7 @@ public class ToDoIssueAgent
 		var toDos = await GetToDosFromToDoFilesAsync(toDoFiles);
 
 		// Create stub references for items with no references.
-		var codeUpdated = await ProcessToDosWithoutReferenceAsync(toDos);
-
-		if (codeUpdated)
-		{ _logger.LogInformation("Stub created and code changed. Stopping process.");
-			return;
-		}
+		await ProcessToDosWithoutReferenceAsync(toDos);
 
 		// Sanity Check: Every item must have a reference by now.
 		foreach (var todo in toDos)
@@ -65,27 +46,19 @@ public class ToDoIssueAgent
 			}
 		}
 
-		//NOTE: Next run will assign the issues for the stubbed references
-
-
-		// Update all the tasks according to the item state.
-		var associated = await EnsureAllTodosAreAssociatedAsync(toDos);
-
-
-
-
-		//await associated.SaveChanges("Updated {ToDoConstants.TASK_MARKER} references: " + associated.join(", "), _logger);
+		// Create any new tasks
+		var newAssociations = await EnsureAllToDosAreAssociatedAsync(toDos);
+		await newAssociations.SaveNewAssociationChanges(_logger);
 
 		// Reconcile all tasks
-		//await ReconcileTasksAsync(todoComments);
+		//await ReconcileTasksAsync(toDos);
 	}
 
 	/// <summary>
 	/// Creates code and mongo db stubs for items without a refernce.
 	/// </summary>
 	/// <param name="toDos"></param>
-	/// <returns></returns>
-	public async Task<bool> ProcessToDosWithoutReferenceAsync(List<IToDo> toDos)
+	public async Task ProcessToDosWithoutReferenceAsync(List<IToDo> toDos)
 	{
 		var todDsWithoutReference = toDos.Where(todo => null == todo.IssueReference).ToList();
 		_logger.LogInformation($"{ToDoConstants.TASK_MARKER}s without references: {todDsWithoutReference.Count}");
@@ -102,7 +75,6 @@ public class ToDoIssueAgent
 			await todoFilesWithoutReference.SaveChanges($"Collecting {todDsWithoutReference.Count} new {ToDoConstants.TASK_MARKER} comments.", _logger);
 		}
 		_logger.LogInformation($"Created stub reference for {todDsWithoutReference.Count} items.");
-		return todDsWithoutReference.Any();
 	}
 	public async Task<List<IToDo>> GetToDosFromToDoFilesAsync(List<IToDoFile> toDoFiles)
 	{
@@ -144,135 +116,128 @@ public class ToDoIssueAgent
 		return files;
 	}
 
-	public async Task UpdateGitFromCodeRepositoryState(CodeRepositoryState codeRepositoryState)
+	public async Task<List<IToDo>> EnsureAllToDosAreAssociatedAsync(List<IToDo> toDos)
 	{
-		//	async saveChanges(commitMessage)
-		//	{
-		//		const changedFiles = files.filter(file => file.contents.changed)
-
-		//		_logger.LogInformation("Files changed: {}", changedFiles.length)
-
-		//		if (changedFiles.length === 0)
-		//		{
-		//			return
-
-		//		}
-		//		for (const file of changedFiles) {
-		//			file.save()
-
-		//		}
-		//		execFileSync("git", ["add", ...changedFiles.map(file => file.fileName)])
-
-		//		execFileSync("git", ["commit", "-m", commitMessage], {
-		//			stdio: "inherit",
-		//		})
-		//		if (!process.env.GITHUB_TOKEN)
-		//		{
-		//			throw "Maybe you forgot to enable the GITHUB_TOKEN secret?"
-
-		//		}
-		//		execSync(
-		//		         "git push "https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git" HEAD:"$GITHUB_REF"",
-
-		//		{ stdio: "inherit" },
-		//		)
-	}
-
-	public async Task<List<string>> EnsureAllTodosAreAssociatedAsync(List<IToDo> todos)
-	{
-		var references = new List<string>();
-		foreach (var todo in todos)
+		var newAssociations = new List<IToDo>();
+		foreach (var toDo in toDos)
 		{
-			if (null == todo.IssueReference)
+			var newAssociation = await EnsureToDoIsAssociatedAsync(toDo);
+			if (null != newAssociation)
 			{
-				var errorMessage = $"Unexpected unidentified {ToDoConstants.TASK_MARKER} marker.";
-				_logger.LogError(errorMessage);
-				throw new ArgumentException(errorMessage);
-			}
-
-			var unassociated = todo.IssueReference.StartsWith("$");
-
-
-			if (unassociated)
-			{
-				// TODO: Isolate error when creating tasks
-				// Failure to create a task should not prevent the action from progressing forward.
-				// We can simply skip processing this comment for now.
-				// Since this script is designed to be idempotent, it can be retried later.
-				var todoUniqueKey = todo.IssueReference.Substring(1);
-				_logger.LogDebug($"Found unresolved {ToDoConstants.TASK_MARKER} issue reference {todoUniqueKey}, resolving task...");
-				//var taskReference = await ResolveTaskAsync(todoUniqueKey, todo);
-				//_logger.LogDebug($"Resolved {ToDoConstants.TASK_MARKER} {todoUniqueKey} => task {taskReference}");
-				//todo.Reference = taskReference;
-				//references.Add(taskReference);
+				newAssociations.Add(newAssociation);
 			}
 		}
 
-		return references;
+		return newAssociations;
 	}
 
-	//export async function reconcileTasks(todos: ITodo[]) {
-	//	const uncompletedTasks = await DataStore.findAllUncompletedTasks(
-	//	  CodeRepository.repoContext.repositoryNodeId,
+	/// <summary>
+	/// If the item is a stub, create or find the DB entry, and create an issue. If the item is already associated, do nothing.
+	/// </summary>
+	/// <param name="toDo"></param>
+	/// <returns>The <see cref="IToDoFile"/> if the item was unassociated, or null if nothing changed.  </returns>
+	/// <exception cref="ArgumentException"></exception>
+	/// <exception cref="ApplicationException"></exception>
+	public async Task<IToDo?> EnsureToDoIsAssociatedAsync(IToDo toDo)
+	{
+		if (null == toDo.IssueReference)
+		{
+			var errorMessage = $"Unexpected unidentified {ToDoConstants.TASK_MARKER} marker.";
+			_logger.LogError(errorMessage);
+			throw new ArgumentException(errorMessage);
+		}
 
-	//	)
-	//  log.info(
-	//	"Number of registered uncompleted tasks: {}",
-	//	uncompletedTasks.length,
-	//  )
+		var unassociated = toDo.IssueReference.StartsWith(ToDoConstants.STUB_REFERENCE_MARKER);
+		if (unassociated)
+		{
+			// TODO: Isolate error when creating tasks
+			// Failure to create a task should not prevent the action from progressing forward.
+			// We can simply skip processing this comment for now.
+			// Since this script is designed to be idempotent, it can be retried later.
+			var todoUniqueKey = toDo.IssueReference.Substring(1);
+			_logger.LogDebug($"Found unresolved {ToDoConstants.TASK_MARKER} issue reference {todoUniqueKey}, resolving task...");
+			var lockedEntity = await _mongoAgent.AcquireTaskCreationLock(toDo);
+			if (null == lockedEntity)
+			{
+				_logger.LogWarning($"Couldn't aquire lock. Todo with issue reference {toDo.IssueReference} skipped.");
+			}
+			else
+			{
+				if (null == toDo.Title || null == toDo.Body)
+				{
+					var message = $"Title and Body must be set before reaching here. Issue Reference: {toDo.IssueReference}";
+					_logger.LogError(message);
+					throw new ApplicationException(message);
+				}
 
-	//  for (const todo of todos) {
-	//		const reference =
-	//		  todo.reference || invariant(false, "Unexpected unidentified {ToDoConstants.TASK_MARKER} marker")
+				var issueModel = toDo.GenerateToDoIssueModelFromTodo(_toDoIssuesConfig);
+				var newIssue = await _gitHubAgent.CreateGitHubIssueAsync(issueModel);
+				toDo.IssueReference = newIssue.Number.ToString(); //This updates the file as well
+				lockedEntity.IssueReference = toDo.IssueReference;
+				lockedEntity.Completed = false;
+				await _mongoAgent.UpsertByIdAsync(lockedEntity);
+				_logger.LogDebug($"Resolved {ToDoConstants.TASK_MARKER} {todoUniqueKey} => task {toDo.IssueReference}");
+			}
 
-	//	invariant(
-	//	  !reference.startsWith("$"),
-	//	  "Expected all {ToDoConstants.TASK_MARKER} comments to be associated by now.",
+			return toDo;
+		}
 
-	//	)
+		return null;
+	}
 
-	//	const task = uncompletedTasks.find(t => t.taskReference === reference)
+	//public async Task ReconcileToDos(List<IToDo> toDos)
+	//{
+	//	var uncompletedTasks = await _mongoAgent.FindAllUncompletedToDosAsync();
+	//	_logger.LogInformation($"Number of registered uncompleted tasks: {uncompletedTasks.Count}");
 
-	//	if (!task)
+	//	foreach (var toDo in toDos)
+	//	{
+	//		if (null == toDo.IssueReference)
 	//		{
-	//			log.warn(
-	//			  "Cannot find a matching task for {ToDoConstants.TASK_MARKER} comment with reference "{}"",
-	//			  reference,
+	//			var errorMessage = $"Unexpected unidentified {ToDoConstants.TASK_MARKER} marker.";
+	//			_logger.LogError(errorMessage);
+	//			throw new ArgumentException(errorMessage);
+	//		}
 
-	//			)
+	//		if (toDo.IssueReference.StartsWith(ToDoConstants.STUB_REFERENCE_MARKER))
+	//		{
+	//			var errorMessage = $"Expected all {ToDoConstants.TASK_MARKER} comments to be associated by now. Reference: {toDo.IssueReference}";
+	//			_logger.LogError(errorMessage);
+	//			throw new ArgumentException(errorMessage);
+	//		}
 
-	//	  continue
+	//		var entity = await _mongoAgent.FindToDoByIssueReferenceAsync(toDo.IssueReference);
+	//		if (null == entity)
+	//		{
+	//			_logger.LogWarning($"Cannot find a matching DB {ToDoConstants.TASK_MARKER} comment with reference: { toDo.IssueReference}");
+	//			continue;
+	//		}
 
-	//	}
-	//		// TODO [#4]: Isolate error when updating tasks
+
+	//		// TODO: Isolate error when updating tasks
 	//		// Failure to update a task should not prevent the action from progressing forward.
 	//		// We can simply skip processing this task for now.
 	//		// Since this script is designed to be idempotent, it can be retried later.
-	//		const {
-	//			title,
-	//      body,
-	//      state,
-	//    } = TaskInformationGenerator.generateTaskInformationFromTodo(todo)
 
-	//	if (task.state.hash !== state.hash)
+	//		var toDoHash = toDo.GetToDoHash();
+	//		if (entity.Hash != toDoHash)
 	//		{
-	//			log.info(
-	//			  "Hash for "{}" changed: "{}" => "{}" -- must update task.",
-	//			  reference,
-	//			  task.state.hash,
-	//			  state.hash,
+	//			_logger.LogInformation($"Hash for {toDo.IssueReference} changed: \"{entity.Hash}\"  => \"{toDoHash}\" -- must update task.");
+	//			var updatedIssue = toDo.GenerateToDoIssueModelFromTodo(_toDoIssuesConfig);
+	//			await _gitHubAgent.UupdateTask(toDo.IssueReference, updatedIssue);
 
-	//			)
-
-	//	  await TaskManagementSystem.updateTask(reference, { title, body })
+	//			await TaskManagementSystem.updateTask(reference, { title, body })
 	//      await task.updateState(state)
+
 
 	//	}
 	//		else
 	//		{
 	//			// TODO [#7]: Test to remove later B
-	//			log.info(
-	//			  "Hash for "{}" remains unchanged: "{}".",
+	//			_logger.LogInformation(
+	//			  "Hash for "{ }
+	//			" remains unchanged: "{ }
+	//			".",
 	//			  reference,
 	//			  task.state.hash,
 
@@ -291,7 +256,8 @@ public class ToDoIssueAgent
 
 	//		if (getShouldCloseIssueOnDelete())
 	//		{
-	//			log.info("{ToDoConstants.TASK_MARKER} for task "{}" is gone -- completing task!", task.taskReference,)
+	//			_logger.LogInformation("{ToDoConstants.TASK_MARKER} for task "{ }
+	//			" is gone -- completing task!", task.taskReference,)
 	//	      // TODO [#5]: Isolate error when completing tasks
 	//		  // Failure to complete a task should not prevent the action from progressing forward.
 	//		  // We can simply skip processing this task for now.
@@ -302,7 +268,8 @@ public class ToDoIssueAgent
 	//		else
 	//		{
 	//			// TODO [#8]: Test to remove later A
-	//			log.info("{ToDoConstants.TASK_MARKER} for task "{}" is gone TODO_ACTIONS_SHOULD_CLOSE_ISSUE_ON_DELETE is false, ignoring task.", task.taskReference,)
+	//			_logger.LogInformation("{ToDoConstants.TASK_MARKER} for task "{ }
+	//			" is gone TODO_ACTIONS_SHOULD_CLOSE_ISSUE_ON_DELETE is false, ignoring task.", task.taskReference,)
 
 	//	}
 
@@ -311,31 +278,4 @@ public class ToDoIssueAgent
 
 	//  }
 	//}
-
-	public async Task<ToDoTaskResolutionModel> AssignIssueToNewToDo(string todoUniqueKey, IToDo todo)
-	{
-		var entity = todo.ToTodDoEntity(todoUniqueKey, _toDoIssuesConfig.CodeRepoInfoModel.Name);
-		await _mongoAgent.AcquireTaskCreationLock(entity, ProcessId);
-		var resolution = await DataStore.beginTaskResolution(
-		  todoUniqueKey,
-		  CodeRepository.repoContext.repositoryNodeId,
-		  todo,
-
-
-		)
-		  if ("existingTaskReference" in resolution) {
-			return resolution.existingTaskReference
-	}
-		const taskCreationLock = await resolution.acquireTaskCreationLock()
-		  _logger.LogDebug("Lock acquired. Now creating task for {ToDoConstants.TASK_MARKER} {}.", todoUniqueKey)
-		  const {
-			title,
-		    body,
-		    state,
-		  } = TaskInformationGenerator.generateTaskInformationFromTodo(todo)
-		  const taskReference = await TaskManagementSystem.createTask({ title, body })
-		  taskCreationLock.finish(taskReference, state)
-		  return taskReference
-		}
-
 }

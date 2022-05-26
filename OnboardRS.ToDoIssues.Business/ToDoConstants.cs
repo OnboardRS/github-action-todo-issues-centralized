@@ -9,4 +9,5 @@ namespace OnboardRS.ToDoIssues.Business;
 public static class ToDoConstants
 {
 	public const string TASK_MARKER = "TODO";
+	public const string STUB_REFERENCE_MARKER = "$";
 }

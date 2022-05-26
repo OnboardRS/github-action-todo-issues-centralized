@@ -1,4 +1,5 @@
 ﻿
+using System.Diagnostics;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using OnboardRS.ToDoIssues.Business.Models.Mongo;
@@ -16,8 +17,18 @@ public class MongoAgent
 	private readonly ILogger<MongoAgent> _logger;
 	private readonly ToDoIssuesConfig _config;
 	private IMongoClient? _mongoClient;
-	private IMongoDatabase? _taskDatabse;
+	private IMongoDatabase? _taskDataBase;
 	private IMongoCollection<ToDoEntity>? _taskCollection;
+
+
+
+	public string ProcessId
+	{
+		get
+		{
+			return Process.GetCurrentProcess().Id.ToString();
+		}
+	}
 
 	private IMongoClient MongoClient
 	{
@@ -34,12 +45,15 @@ public class MongoAgent
 	{
 		get
 		{
-			if (null == _taskDatabse)
+			if (null == _taskDataBase)
 			{
 				var mongoUrl = new MongoUrl(_config.MongoDbUrl);
-				_taskDatabse = MongoClient.GetDatabase(TODO_DATABASE_NAME);
+				_taskDataBase = MongoClient.GetDatabase(_config.MongoDbName);
+				ValidateDataBaseConnection();
+
+
 			}
-			return _taskDatabse;
+			return _taskDataBase;
 		}
 	}
 
@@ -49,7 +63,13 @@ public class MongoAgent
 		{
 			if (null == _taskCollection)
 			{
-				_taskCollection = MongoDatabase.GetCollection<ToDoEntity>(TODO_COLLECTION_NAME);
+				var exists = CollectionExistsAsync(_config.MongoDbCollectionName).Result;
+				if (!exists)
+				{
+					MongoDatabase.CreateCollection(_config.MongoDbCollectionName);
+				}
+
+				_taskCollection = MongoDatabase.GetCollection<ToDoEntity>(_config.MongoDbCollectionName);
 			}
 			return _taskCollection;
 		}
@@ -60,6 +80,24 @@ public class MongoAgent
 	{
 		_config = config;
 		_logger = logger;
+	}
+
+	public void ValidateDataBaseConnection()
+	{
+		var doc = MongoDatabase.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Result;
+		if (null == doc)
+		{
+			throw new ApplicationException($"Could not connect to DB {_config.MongoDbName}");
+		}
+	}
+
+	public async Task<bool> CollectionExistsAsync(string collectionName)
+	{
+		var filter = new BsonDocument("name", collectionName);
+		//filter by collection name
+		var collections = await MongoDatabase.ListCollectionsAsync(new ListCollectionsOptions { Filter = filter });
+		//check for existence
+		return await collections.AnyAsync();
 	}
 
 	public async Task<List<ToDoPersistanceModel>> GetExistingToDoComparisonModelsAsync()
@@ -75,55 +113,87 @@ public class MongoAgent
 		return comparisonModels;
 	}
 
-	//public async Task<ToDoComparisonModel> BeginTaskResolution(string todoUniqueKey, IToDo todo)
-	//{
-	//	var entity = todo.ToTodDoEntity(todoUniqueKey, repositoryId);
-
-	//	// Ensure a task exists in the database.
-	//	var upsertedEntity = await UpsertByIdAsync(entity);
-	//	if (null == upsertedEntity)
-	//	{
-	//		throw new ApplicationException("Failed to upsert a task.");
-	//	}
-
-	//	if (upsertedEntity.IssueReference != null)
-	//	{
-	//		_logger.LogDebug($"Found already-existing identifier {upsertedEntity.IssueReference} for TODO {todoUniqueKey}.");
-	//	}
-
-	//	var result = new ToDoTaskResolutionModel(upsertedEntity);
-	//	return result;
-	//}
-
-	public async Task AcquireTaskCreationLock(ToDoEntity model, string currentProcessId)
+	/// <summary>
+	/// This method is to be called when trying to turn a code stub into a persisted stub.
+	/// </summary>
+	/// <param name="toDo"></param>
+	/// <returns></returns>
+	public async Task<ToDoEntity?> AcquireTaskCreationLock(IToDo toDo)
 	{
-		// Acquire a lock...
-		_logger.LogDebug($"Acquiring lock for TODO {model.Id} (currentProcessId={currentProcessId}).");
-
-		model.OwnerProcessId = currentProcessId;
-		model.OwnerProcessTimestamp = DateTime.UtcNow;
-		var lockedTask = await UpsertByLockOrIdAsync(model);
-
-		if (null == lockedTask)
+		if (null == toDo.IssueReference)
 		{
-			throw new ApplicationException("Failed to acquire a lock for this task.");
-
+			_logger.LogDebug($"Cannot acquire create log for null {nameof(toDo.IssueReference)}");
+			return null;
 		}
+		if (!toDo.IssueReference.StartsWith(ToDoConstants.STUB_REFERENCE_MARKER))
+		{
+			_logger.LogDebug($"Cannot acquire create log for reference that doesn't start with {ToDoConstants.STUB_REFERENCE_MARKER}");
+			return null;
+		}
+
+		var stubIssueReference = toDo.IssueReference.Substring(1);
+		var existing = await FindToDoByIssueReferenceAsync(stubIssueReference);
+		if (null != existing && existing.OwnerProcessTimestamp.HasValue && DateTime.UtcNow.Subtract(existing.OwnerProcessTimestamp.Value).TotalMinutes >= 90)
+		{
+			_logger.LogDebug($"Create lock already exists for issue reference {toDo.IssueReference}");
+			return null;
+		}
+
+		var entity = existing ?? ToCreatableEntity(toDo, stubIssueReference, _config.CodeRepoInfoModel.Name);
+		entity.OwnerProcessTimestamp = DateTime.UtcNow;
+		entity.OwnerProcessId = ProcessId;
+		var lockedEntity = await UpsertByIdAsync(entity);
+		return lockedEntity;
 	}
 
-	public async Task Finish(ToDoEntity model, string taskReference, IToDoTaskState state)
+	public async Task ReleaseTaskCreationLock(ToDoEntity toDo)
 	{
-		//// Associate
-		//_logger.LogDebug($"Created task {taskReference} for {ToDoConstants.TASK_MARKER} {model.Id}. Saving changes.");
-		//model.TaskReference = 
+		toDo.OwnerProcessTimestamp = null;
+		toDo.OwnerProcessId = null;
+		await UpsertByIdAsync(toDo);
+	}
 
-		//	  await db.tasks.findOneAndUpdate(
+	public static ToDoEntity ToCreatableEntity(IToDo todo, string stubIssueReference, string repositoryId)
+	{
+		var objectId = new ObjectId(Guid.NewGuid().ToString().Replace("-", string.Empty));
+		var model = new ToDoEntity(objectId, repositoryId)
+		{
+			Completed = null,
+			CreatedAt = DateTime.UtcNow,
+			Hash = todo.GetToDoHash(),
+			OwnerProcessId = null,
+			OwnerProcessTimestamp = null,
+			IssueReference = stubIssueReference
+		};
+		return model;
+	}
 
+	public async Task<ToDoEntity?> FindToDoByIssueIdAsync(string? id)
+	{
+		if (string.IsNullOrWhiteSpace(id))
+		{
+			return null;
+		}
 
+		var filter = Builders<ToDoEntity>.Filter.Eq(x => x.Id, new ObjectId(id));
+		var findCursor = await ToDoMongoCollection.FindAsync(filter);
+		var entity = await findCursor.FirstOrDefaultAsync();
+		return entity;
 
-		//           { $set: { taskReference: taskReference, hash: state.hash } },
-		//         )
-		//       },
+	}
+
+	public async Task<ToDoEntity?> FindToDoByIssueReferenceAsync(string? issueReference)
+	{
+		if (string.IsNullOrWhiteSpace(issueReference))
+		{
+			return null;
+		}
+
+		var filter = Builders<ToDoEntity>.Filter.Eq(x => x.IssueReference, issueReference);
+		var findCursor = await ToDoMongoCollection.FindAsync(filter);
+		var entity = await findCursor.FirstOrDefaultAsync();
+		return entity;
+
 	}
 
 	public async Task<List<ToDoEntity>> FindAllTasksAsync()
@@ -177,10 +247,12 @@ public class MongoAgent
 
 	private async Task<ToDoEntity?> UpsertAsync(FilterDefinition<ToDoEntity>? filter, ToDoEntity model)
 	{
-		var item = await ToDoMongoCollection.FindOneAndReplaceAsync(filter, model, new FindOneAndReplaceOptions<ToDoEntity, ToDoEntity>()
+		var options = new FindOneAndReplaceOptions<ToDoEntity, ToDoEntity>
 		{
-			IsUpsert = true
-		});
+			IsUpsert = true,
+			ReturnDocument = ReturnDocument.After
+		};
+		var item = await ToDoMongoCollection.FindOneAndReplaceAsync(filter, model, options);
 		return item;
 	}
 }

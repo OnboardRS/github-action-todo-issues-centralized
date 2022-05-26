@@ -231,6 +231,28 @@ public class GitHubAgent
 	//	}
 	//}
 
+	public async Task<List<Label>> GetGitHubLabelsAsync()
+	{
+		var client = GetGitHubRestClient();
+		var request = new RestRequest($"/repos/{_config.IssueRepoInfoModel.Owner}/{_config.IssueRepoInfoModel.Name}/labels");
+		var result = await client.ExecuteAsync(request);
+		if (!result.IsSuccessful || string.IsNullOrWhiteSpace(result.Content))
+		{
+			var message = $"{nameof(GetGitHubLabelsAsync)} request failed with code {result.StatusCode} and result [{result.Content}]\nError: [{result.ErrorMessage}]";
+			_logger.LogError(message);
+			throw new ApplicationException(message);
+		}
+
+		var labels = JsonConvert.DeserializeObject<List<Label>>(result.Content);
+		if (null == labels)
+		{
+			var message = $"{nameof(GetGitHubLabelsAsync)} deserialize failed with content: [{result.Content}]";
+			_logger.LogError(message);
+			throw new ApplicationException(message);
+		}
+		return labels;
+	}
+
 	public async Task<Repository> GetGitHubIssueRepoAsync()
 	{
 		var client = GetGitHubClient();
@@ -243,12 +265,37 @@ public class GitHubAgent
 		return await client.Issue.Get(IssueRepoId, issueId);
 	}
 
+	public async Task<Issue> UpdateGitHubIssueAsync(ToDoIssueModel toDoIssueModel)
+	{
+		if (int.TryParse(toDoIssueModel.IssueNumber, out int issueNumber))
+		{
+			var issue = await GetGitHubIssueAsync(issueNumber);
+
+			// TODO: Handle Labels
+
+			//foreach (var issueLabel in issue.Labels.Select(x => x.Name))
+			//{
+			//	if ()
+			//}
+			var issueUpdate = issue.ToUpdate();
+			issueUpdate.Title = toDoIssueModel.Title;
+			issueUpdate.Body = toDoIssueModel.Body;
+			var client = GetGitHubClient();
+			await client.Issue.Update(IssueRepoId, issueNumber, issueUpdate);
+			return issue;
+
+		}
+		var message = $"Invalid {nameof(toDoIssueModel.IssueNumber)} for use in {nameof(UpdateGitHubIssueAsync)}. Could not parse to int. Got {toDoIssueModel.IssueNumber}";
+		_logger.LogError(message);
+		throw new ApplicationException(message);
+	}
+
 	public async Task<Issue> CreateGitHubIssueAsync(ToDoIssueModel toDoIssueModel)
 	{
 		var newIssue = new NewIssue(toDoIssueModel.Title)
-		               {
-			               Body = toDoIssueModel.Body
-		               };
+		{
+			Body = toDoIssueModel.Body
+		};
 		return await CreateGitHubIssueAsync(newIssue);
 	}
 
@@ -271,6 +318,14 @@ public class GitHubAgent
 		var githubClient = new GitHubClient(new ProductHeaderValue(_config.IssueRepoInfoModel.Name));
 		githubClient.Credentials = tokenAuth;
 		return githubClient;
+	}
+
+	private RestClient GetGitHubRestClient()
+	{
+		var client = new RestClient("https://api.github.com/");
+		client.AddDefaultHeader("Authorization", $" token {_config.GitHubAccessToken}");
+		client.AddDefaultHeader("Accept", "application/vnd.github.v3+json");
+		return client;
 	}
 
 }
