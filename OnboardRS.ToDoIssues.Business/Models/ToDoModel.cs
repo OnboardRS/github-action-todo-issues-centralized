@@ -16,7 +16,7 @@ public class ToDoModel : BaseReflectedToStringObject, IToDo
 		set
 		{
 			_reference = value;
-			ToDoFile.Contents.ChangeLine(StartLine, $"{Prefix}{ToDoConstants.TO_DO_MARKER}{(null != value ? $" [#{value}]" : string.Empty)}:{Suffix}");
+			ToDoFile.Contents.ChangeLine(StartLine, $"{Prefix}{ToDoConstants.TO_DO_MARKER}{(null != value ? $" [#{value.TrimStart('#')}]" : string.Empty)}:{Suffix}");
 		}
 	}
 
