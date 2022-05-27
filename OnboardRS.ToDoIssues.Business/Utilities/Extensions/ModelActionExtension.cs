@@ -101,7 +101,7 @@ public static class ModelActionExtension
 			var gitConfigEmailCommand = $"git config --global user.email \"github-action-todo-issues-centralized@GitHub.com\"";
 			await gitConfigEmailCommand.RunBashCommandAsync(logger);
 
-			var gitConfigUserNameCommand = $"git config --global user.name \"{ToDoConstants.TO_DO_MARKER}-Bot\"";
+			var gitConfigUserNameCommand = $"git config --global user.name \"{ToDoConstants.TO_DO_MARKER}[bot]\"";
 			await gitConfigUserNameCommand.RunBashCommandAsync(logger);
 		}
 	}
