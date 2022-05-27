@@ -4,7 +4,7 @@ namespace OnboardRS.ToDoIssues.Business.Utilities.Extensions;
 
 public static class ToDoParserExtensions
 {
-	public const string TODO_REGULAR_EXPRESSION = @"^(\W+\s)TODO(?: \[([^\]\s]+)\])?:(.*)";
+	public const string TODO_REGULAR_EXPRESSION = $@"^(\W+\s){ToDoConstants.TO_DO_MARKER}?: \[([^\]\s]+)\])?:(.*)";
 	private static readonly Regex Regex = new(TODO_REGULAR_EXPRESSION, RegexOptions.Multiline);
 
 	public static Match? ParseLineForToDo(this string input)

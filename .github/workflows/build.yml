@@ -5,6 +5,7 @@ on:
 
 jobs:
   coding-standards:
+    if: ${{ github.actor != 'onboard-service-dev' && github.actor != 'dependabot[bot]' }} #Ignore bots
     name: Build And Test
     runs-on: ubuntu-latest
     env:      

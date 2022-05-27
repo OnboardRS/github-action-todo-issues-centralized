@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		.github\workflows\build.yml = .github\workflows\build.yml
 		dockerBuild.ps1 = dockerBuild.ps1
 		Dockerfile = Dockerfile
 		dockerRun.ps1 = dockerRun.ps1

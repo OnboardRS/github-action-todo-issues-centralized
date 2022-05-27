@@ -5,6 +5,7 @@ on:
 jobs:
   todo-issues:
     name: Handle TODO ZenHub Issues Integration
+	if: ${{ github.actor != 'onboard-service-dev' && github.actor != 'dependabot[bot]' }} #Ignore bots
     runs-on: ubuntu-latest
     env:
       solutionName: ./todo-issues-centralized.sln
